@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlixPlayer - Documentación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- Highlight.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark-dimmed.min.css">
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --dark-color: #212529;
+            --code-bg: #2d333b;
+            --code-text: #adbac7;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        .navbar-brand {
+            font-weight: 700;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+        .code-block {
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #444c56;
+            overflow: hidden;
+        }
+        .code-block pre {
+            margin: 0;
+            padding: 0;
+            background: transparent !important;
+        }
+        .code-block code {
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--code-text);
+        }
+        .nav-link.active {
+            color: var(--primary-color) !important;
+            font-weight: bold;
+        }
+        .example-container {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .section-title {
+            position: relative;
+            padding-bottom: 0.75rem;
+            margin-bottom: 2rem;
+            color: var(--dark-color);
+            font-weight: 600;
+        }
+        .section-title:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+        }
+        .card.method-card {
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            height: 100%;
+        }
+        .card.method-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .card-header.method-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-bottom: none;
+            padding: 1rem 1.25rem;
+            border-radius: 8px 8px 0 0 !important;
+        }
+        .hljs {
+            background: transparent !important;
+            padding: 0 !important;
+        }
+        .hljs-keyword {
+            color: #f47067 !important; /* Rojo suave para keywords */
+        }
+        .hljs-built_in {
+            color: #dcbdfb !important; /* Morado para funciones built-in */
+        }
+        .hljs-string {
+            color: #96d0ff !important; /* Azul claro para strings */
+        }
+        .hljs-number {
+            color: #6cb6ff !important; /* Azul para números */
+        }
+        .hljs-attr {
+            color: #6bc46d !important; /* Verde para atributos */
+        }
+        .hljs-comment {
+            color: #768390 !important; /* Gris para comentarios */
+        }
+        .hljs-title {
+            color: #6cb6ff !important; /* Azul para títulos */
+        }
+        .hljs-params {
+            color: #adbac7 !important; /* Gris claro para parámetros */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="bi bi-play-circle-fill me-2"></i>
+                <span>FlixPlayer</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item mx-2">
+                        <a class="nav-link active" href="#inicio">Inicio</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#instalacion">Instalación</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#configuracion">Configuración</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#metodos">Métodos</a>
+                    </li>
+                    <li class="nav-item mx-2">
+                        <a class="nav-link" href="#ejemplos">Ejemplos</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="inicio" class="py-5 bg-light">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 text-center">
+                    <h1 class="display-4 fw-bold mb-4">FlixPlayer <span class="text-success">v2.4</span></h1>
+                    <p class="lead mb-4 text-muted">Reproductor de video HTML5 altamente personalizable con interfaz minimalista y características avanzadas para una experiencia profesional.</p>
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="#instalacion" class="btn btn-primary btn-lg px-4 py-2 d-flex align-items-center">
+                            <i class="bi bi-rocket me-2"></i>Comenzar
+                        </a>
+                        <a href="#ejemplos" class="btn btn-outline-dark btn-lg px-4 py-2 d-flex align-items-center">
+                            <i class="bi bi-code-slash me-2"></i>Ejemplos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-5">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold section-title d-inline-block">Características Principales</h2>
+                <p class="lead text-muted">Todo lo que necesitas en un reproductor moderno</p>
+            </div>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
+                        <div class="feature-icon">
+                            <i class="bi bi-sliders"></i>
+                        </div>
+                        <h3>Personalizable</h3>
+                        <p class="text-muted">Ajusta el reproductor a tus necesidades con múltiples opciones de configuración de apariencia y comportamiento.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
+                        <div class="feature-icon">
+                            <i class="bi bi-speedometer2"></i>
+                        </div>
+                        <h3>Alto Rendimiento</h3>
+                        <p class="text-muted">Optimizado para cargar rápidamente y reproducir sin problemas incluso en conexiones lentas.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
+                        <div class="feature-icon">
+                            <i class="bi bi-phone"></i>
+                        </div>
+                        <h3>Totalmente Responsivo</h3>
+                        <p class="text-muted">Se adapta perfectamente a cualquier dispositivo móvil, tableta o escritorio.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
+                        <div class="feature-icon">
+                            <i class="bi bi-download"></i>
+                        </div>
+                        <h3>Soporte para Descargas</h3>
+                        <p class="text-muted">Permite agregar botones de descarga para que los usuarios puedan guardar tus videos.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
+                        <div class="feature-icon">
+                            <i class="bi bi-shield-lock"></i>
+                        </div>
+                        <h3>Protección de Contenido</h3>
+                        <p class="text-muted">Opciones para detectar AdBlock y prevenir descargas no autorizadas.</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
+                        <div class="feature-icon">
+                            <i class="bi bi-bookmark-check"></i>
+                        </div>
+                        <h3>Recordar Progreso</h3>
+                        <p class="text-muted">Guarda la posición de reproducción para que los usuarios continúen donde lo dejaron.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section id="instalacion" class="py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Instalación Rápida</h2>
+                    
+                    <div class="mb-5">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <span class="badge bg-success rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">1</span>
+                            Incluye las dependencias
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-html">&lt;!-- En el head de tu HTML --&gt;
+&lt;script src="https://flixplayer.onrender.com/cdn/player.js"&gt;&lt;/script&gt;</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <span class="badge bg-success rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">2</span>
+                            Agrega el contenedor HTML
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-html">&lt;!-- Donde quieras mostrar el reproductor --&gt;
+&lt;div id="mi-reproductor" style="width: 100%; height: 400px;"&gt;&lt;/div&gt;</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <span class="badge bg-success rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">3</span>
+                            Inicializa el reproductor
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-javascript">&lt;script&gt;
+    // Configuración básica del reproductor
+    const player = new Player('mi-reproductor', {
+        media: {
+            title: "Mi Video",
+            description: "Descripción del video",
+            image: "imagen.jpg",
+            file: "video.mp4"
+        },
+        player: {
+            autostart: false,
+            mute: false,
+            volume: 80
+        }
+    });
+&lt;/script&gt;</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration -->
+    <section id="configuracion" class="py-5">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Opciones de Configuración</h2>
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-5">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <i class="bi bi-film text-success me-3"></i>
+                            Configuración de Media
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-javascript">media: {
+    title: "Título del video",       // String - Título que se mostrará
+    description: "Descripción",     // String - Descripción del video
+    image: "poster.jpg",            // String - URL de la imagen miniatura
+    file: "video.mp4",              // String - URL del archivo de video
+    downloadUrl: "video.mp4",       // String (opcional) - URL para descarga
+    thumbnails: "thumbnails.vtt"    // String (opcional) - URL de miniaturas
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <i class="bi bi-gear text-success me-3"></i>
+                            Configuración del Reproductor
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-javascript">player: {
+    autostart: false,               // Boolean - Auto-reproducir al cargar
+    mute: false,                    // Boolean - Silenciar al inicio
+    volume: 80,                     // Number (0-100) - Volumen inicial
+    displayDescription: true,       // Boolean - Mostrar descripción
+    aboutText: "Powered by FlixPlayer", // String - Texto personalizado
+    aboutLink: "",                  // String - Enlace para el texto
+    logo: {                         // Object - Configuración de logo
+        file: "logo.png",           // String - URL del logo
+        link: "https://..."         // String - Enlace al hacer clic
+    },
+    captions: {                     // Object - Estilo de subtítulos
+        color: "#FFF",              // String - Color del texto
+        fontSize: 14,               // Number - Tamaño de fuente
+        backgroundOpacity: 0,       // Number (0-1) - Opacidad fondo
+        edgeStyle: "raised"         // String - Estilo del borde
+    }
+}</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="mb-5">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <i class="bi bi-shield text-success me-3"></i>
+                            Características Avanzadas
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-javascript">features: {
+    seekButtons: true,              // Boolean - Botones de avance/retroceso
+    progressSaving: true,           // Boolean - Guardar progreso de reproducción
+    antiAdBlock: false,             // Boolean - Detectar AdBlock
+    antiDownload: false             // Boolean - Prevenir descargas
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <i class="bi bi-cash-coin text-success me-3"></i>
+                            Configuración de Monetización
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-javascript">// Configuración básica de monetización
+setMonetization({
+    user: "https://tu-enlace.com"   // String - Tu enlace personalizado
+});
+
+// Configuración de tráfico de clics
+setClickTraffic({
+    enabled: true,                  // Boolean - Habilitar/deshabilitar
+    interval: 300000,               // Number - Intervalo en milisegundos
+    maxClicks: 10                   // Number - Máximo de clics permitidos
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Methods -->
+    <section id="metodos" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Métodos Públicos</h2>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="card method-card h-100">
+                        <div class="card-header method-header">
+                            <h5 class="card-title mb-0"><code>play()</code></h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Inicia la reproducción del video.</p>
+                            <div class="code-block bg-white">
+                                <pre><code class="language-javascript">player.play();</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card method-card h-100">
+                        <div class="card-header method-header">
+                            <h5 class="card-title mb-0"><code>pause()</code></h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Pausa la reproducción del video.</p>
+                            <div class="code-block bg-white">
+                                <pre><code class="language-javascript">player.pause();</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card method-card h-100">
+                        <div class="card-header method-header">
+                            <h5 class="card-title mb-0"><code>loadMedia(file, image, title, description)</code></h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Carga un nuevo video en el reproductor.</p>
+                            <div class="code-block bg-white">
+                                <pre><code class="language-javascript">player.loadMedia(
+    "nuevo-video.mp4",   // String - URL del video
+    "poster.jpg",        // String - URL de la miniatura
+    "Título",            // String - Título del video
+    "Descripción"        // String - Descripción
+);</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card method-card h-100">
+                        <div class="card-header method-header">
+                            <h5 class="card-title mb-0"><code>setDownloadUrl(url)</code></h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Establece una URL para descargar el video.</p>
+                            <div class="code-block bg-white">
+                                <pre><code class="language-javascript">player.setDownloadUrl("video.mp4");</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card method-card h-100">
+                        <div class="card-header method-header">
+                            <h5 class="card-title mb-0"><code>setMonetization(options)</code></h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Configura las opciones de monetización.</p>
+                            <div class="code-block bg-white">
+                                <pre><code class="language-javascript">player.setMonetization({
+    user: "https://tu-enlace.com"  // String - Enlace personalizado
+});</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card method-card h-100">
+                        <div class="card-header method-header">
+                            <h5 class="card-title mb-0"><code>destroy()</code></h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">Elimina el reproductor y limpia los recursos.</p>
+                            <div class="code-block bg-white">
+                                <pre><code class="language-javascript">player.destroy();</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Examples -->
+    <section id="ejemplos" class="py-5">
+        <div class="container">
+            <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Ejemplos Prácticos</h2>
+            
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="example-container">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <i class="bi bi-play-btn text-success me-3"></i>
+                            Reproductor Básico
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-javascript">const basicPlayer = new Player('reproductor-basico', {
+    media: {
+        title: "Video Ejemplo",
+        description: "Esto es un video de ejemplo",
+        image: "poster.jpg",
+        file: "video.mp4"
+    },
+    player: {
+        autostart: false,
+        mute: false,
+        volume: 80
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="example-container">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <i class="bi bi-shield-lock text-success me-3"></i>
+                            Reproductor Protegido
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-javascript">const protectedPlayer = new Player('reproductor-protegido', {
+    media: {
+        title: "Video Protegido",
+        file: "video.mp4",
+        image: "poster.jpg"
+    },
+    features: {
+        antiAdBlock: true,   // Detectar AdBlock
+        antiDownload: true   // Prevenir descargas
+    }
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6">
+                    <div class="example-container">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <i class="bi bi-download text-success me-3"></i>
+                            Con Botón de Descarga
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-javascript">const downloadPlayer = new Player('reproductor-descarga', {
+    media: {
+        title: "Video Descargable",
+        file: "video.mp4",
+        image: "poster.jpg",
+        downloadUrl: "video.mp4"  // URL para descarga
+    }
+});
+
+// También puedes agregarlo después:
+downloadPlayer.setDownloadUrl("video.mp4");</code></pre>
+                        </div>
+                    </div>
+                    
+                    <div class="example-container">
+                        <h3 class="d-flex align-items-center text-dark mb-4">
+                            <i class="bi bi-arrow-repeat text-success me-3"></i>
+                            Cambio Dinámico de Video
+                        </h3>
+                        <div class="code-block mt-3">
+                            <pre><code class="language-javascript">const dynamicPlayer = new Player('reproductor-dinamico', {
+    media: {
+        title: "Primer Video",
+        file: "video1.mp4",
+        image: "poster1.jpg"
+    }
+});
+
+// En algún evento (click, etc.)
+document.getElementById('cambiar-video').addEventListener('click', () => {
+    dynamicPlayer.loadMedia(
+        "video2.mp4",
+        "poster2.jpg",
+        "Segundo Video",
+        "Nueva descripción"
+    );
+});</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4 bg-dark text-white">
+        <div class="container text-center">
+            <p class="mb-0">
+                <i class="bi bi-c-circle"></i> 2023 FlixPlayer v2.4 - 
+                <a href="#" class="text-white text-decoration-none">Documentación</a> | 
+                <a href="#" class="text-white text-decoration-none">Términos</a> | 
+                <a href="#" class="text-white text-decoration-none">Privacidad</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>
