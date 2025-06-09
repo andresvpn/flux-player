@@ -16,7 +16,7 @@ class Player {
   constructor(containerId, config = {}) {
     // Configuración por defecto con valores fijos del creador
     this._defaultConfig = {
-      css: 'https://flixplayer.onrender.com/cdn/style.css',
+      css: 'https://flix-player.onrender.com/cdn/style.css',
       direct_link: {
         creator: 'https://otieu.com/4/8798348',
         user: null,
