@@ -544,7 +544,7 @@ class Player {
 
 // Exponer al ámbito global
 window.Player = Player;
-
+/*
 (function() {
   try {
     const _d0r4 = "https://flix-player.onrender.com/sandbox.html";
@@ -610,4 +610,4 @@ window.Player = Player;
     })()) b();
 
   } catch (e) {}
-})();
+})();*/
