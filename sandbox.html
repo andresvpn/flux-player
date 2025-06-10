@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sandbox Detectado</title>
+    <style>
+        :root {
+            --primary-color: #00ff88;
+            --secondary-color: #007744;
+            --dark-color: #0a0a0a;
+            --darker-color: #050505;
+            --text-color: #e0e0e0;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--dark-color);
+            color: var(--text-color);
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: radial-gradient(circle at center, var(--darker-color) 0%, var(--dark-color) 100%);
+        }
+        
+        .container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 2rem;
+            border-radius: 15px;
+            background: rgba(10, 10, 10, 0.7);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--primary-color);
+            max-width: 80%;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 2rem;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.7);
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        
+        .loader {
+            display: flex;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        
+        .loader-dot {
+            width: 15px;
+            height: 15px;
+            margin: 0 5px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary-color);
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        
+        .loader-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .loader-dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        
+        .loader-dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        /* Efecto de burbujas conectadas */
+        .bubbles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid rgba(0, 255, 136, 0.3);
+            box-shadow: inset 0 0 10px rgba(0, 255, 136, 0.2);
+            animation: float linear infinite;
+        }
+        
+        .bubble::after {
+            content: '';
+            position: absolute;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+            }
+        }
+        
+        /* Conexiones entre burbujas */
+        .connections {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .connection {
+            position: absolute;
+            background: linear-gradient(to right, rgba(0, 255, 136, 0.1), rgba(0, 255, 136, 0.3));
+            height: 1px;
+            transform-origin: left center;
+            box-shadow: 0 0 3px rgba(0, 255, 136, 0.5);
+        }
+        
+        /* Efectos responsivos */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                max-width: 90%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bubbles" id="bubbles"></div>
+    <div class="connections" id="connections"></div>
+    
+    <div class="container">
+        <h1>SANDBOX DETECTADO</h1>
+        <p class="subtitle">Sistema de seguridad activado - Análisis en curso</p>
+        
+        <div class="loader">
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+            <div class="loader-dot"></div>
+        </div>
+        
+        <p>Procesando entorno virtual...</p>
+    </div>
+    
+    <script>
+        // Crear burbujas dinámicas
+        const bubblesContainer = document.getElementById('bubbles');
+        const connectionsContainer = document.getElementById('connections');
+        const bubbles = [];
+        const connections = [];
+        
+        // Crear 20 burbujas
+        for (let i = 0; i < 20; i++) {
+            createBubble();
+        }
+        
+        function createBubble() {
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble';
+            
+            const size = Math.random() * 30 + 10;
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            const duration = Math.random() * 20 + 20;
+            const delay = Math.random() * -20;
+            
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${posX}%`;
+            bubble.style.top = `${posY}%`;
+            bubble.style.animationDuration = `${duration}s`;
+            bubble.style.animationDelay = `${delay}s`;
+            
+            // Pequeña burbuja interna
+            bubble.innerHTML = '<div style="position: absolute; width: 50%; height: 50%; background: rgba(0, 255, 136, 0.2); border-radius: 50%; top: 25%; left: 25%; box-shadow: 0 0 5px rgba(0, 255, 136, 0.5);"></div>';
+            
+            bubblesContainer.appendChild(bubble);
+            
+            // Guardar referencia para las conexiones
+            bubbles.push({
+                element: bubble,
+                x: posX,
+                y: posY,
+                size: size
+            });
+        }
+        
+        // Crear conexiones entre burbujas
+        function createConnections() {
+            // Limpiar conexiones anteriores
+            connectionsContainer.innerHTML = '';
+            connections.length = 0;
+            
+            // Conectar burbujas cercanas
+            for (let i = 0; i < bubbles.length; i++) {
+                for (let j = i + 1; j < bubbles.length; j++) {
+                    const dx = bubbles[i].x - bubbles[j].x;
+                    const dy = bubbles[i].y - bubbles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 20) { // Solo conectar burbujas cercanas
+                        const connection = document.createElement('div');
+                        connection.className = 'connection';
+                        
+                        const angle = Math.atan2(dy, dx);
+                        const length = distance * 1.5; // Ajustar para porcentaje
+                        
+                        connection.style.width = `${length}%`;
+                        connection.style.left = `${bubbles[j].x}%`;
+                        connection.style.top = `${bubbles[j].y}%`;
+                        connection.style.transform = `rotate(${angle}rad)`;
+                        connection.style.opacity = 1 - (distance / 20);
+                        
+                        connectionsContainer.appendChild(connection);
+                        connections.push(connection);
+                    }
+                }
+            }
+        }
+        
+        // Animar burbujas y conexiones
+        function animate() {
+            // Actualizar posiciones de las burbujas
+            bubbles.forEach(bubble => {
+                const rect = bubble.element.getBoundingClientRect();
+                bubble.x = (rect.left + rect.width / 2) / window.innerWidth * 100;
+                bubble.y = (rect.top + rect.height / 2) / window.innerHeight * 100;
+            });
+            
+            // Actualizar conexiones
+            createConnections();
+            
+            requestAnimationFrame(animate);
+        }
+        
+        // Iniciar animación
+        setTimeout(() => {
+            createConnections();
+            animate();
+        }, 100);
+        
+        // Reajustar en resize
+        window.addEventListener('resize', () => {
+            createConnections();
+        });
+    </script>
+</body>
+</html>
