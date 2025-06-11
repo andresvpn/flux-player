@@ -1,10 +1,10 @@
 /**
  * FlixPlayer - Reproductor de video personalizable
- * @version 2.9
+ * @version 3.0
  * @license MIT
  * 
  * Características principales:
- * - Monetización mejorada con popups confiables
+ * - Monetización con redirección directa a enlaces
  * - Configuración simplificada para usuarios
  * - Mantiene todas las personalizaciones originales
  */
@@ -60,7 +60,8 @@ class Player {
           enabled: true,
           interval: 300000, // 5 minutos entre clics automáticos
           maxDaily: 20 // Límite diario de clics automáticos
-        }
+        },
+        redirectMode: true // Nueva opción para redirección directa
       }
     };
 
@@ -227,7 +228,7 @@ class Player {
       this._currentClicks++;
       this._dailyClicks++;
       
-      // Manejar el clic
+      // Manejar el clic con redirección directa
       this._handleMonetizationClick();
       
       // Ocultar temporalmente
@@ -248,52 +249,13 @@ class Player {
     
     const targetUrl = useAdminLink ? this._config.links.admin : this._config.links.user;
     
-    // Método mejorado para abrir el enlace
-    this._openSmartPopup(targetUrl);
-  }
-
-  _openSmartPopup(url) {
-    if (!url) return;
-    
-    // Método 1: Popup estándar con redirección diferida
-    const popup = window.open('', '_blank', 'width=800,height=600,left=' + 
-      ((screen.width - 800) / 2) + ',top=' + ((screen.height - 600) / 2));
-    
-    if (popup) {
-      try {
-        // Redirigir después de un breve retraso
-        setTimeout(() => {
-          try {
-            popup.location.href = url;
-          } catch(e) {
-            // Fallback si falla la redirección
-            popup.close();
-            window.open(url, '_blank');
-          }
-        }, 100);
-        return;
-      } catch(e) {
-        popup.close();
-      }
+    // Redirección directa en lugar de popup
+    if (this._config.monetization.redirectMode) {
+      window.location.href = targetUrl;
+    } else {
+      // Método alternativo si se desactiva redirectMode
+      window.open(targetUrl, '_blank');
     }
-    
-    // Método 2: Formulario como fallback
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = url;
-    form.target = '_blank';
-    form.style.display = 'none';
-    
-    // Token CSRF ficticio para evitar bloqueos
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'csrf_token';
-    input.value = 'flixplayer_' + Date.now();
-    form.appendChild(input);
-    
-    document.body.appendChild(form);
-    form.submit();
-    setTimeout(() => document.body.removeChild(form), 1000);
   }
 
   _setupAutoClicks() {
@@ -496,6 +458,9 @@ class Player {
         ...this._config.monetization.autoClicks,
         ...settings.autoClicks
       };
+    }
+    if (settings.redirectMode !== undefined) {
+      this._config.monetization.redirectMode = settings.redirectMode;
     }
     return this;
   }
