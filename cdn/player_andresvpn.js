@@ -178,16 +178,18 @@ _addSeekButtons() {
     if (controlbar && playButton) {
       clearInterval(waitForControlBar);
 
-      // Eliminar botones existentes
+      // Quitar botones previos si existen
       const existingButtons = controlbar.querySelectorAll('.jw-seek-button');
       existingButtons.forEach(btn => btn.remove());
 
-      // Crear botones individuales (no un solo contenedor)
+      // Crear los botones de adelantar y retroceder
       const rewindBtn = this._createSeekButton('rewind', -10);
       const forwardBtn = this._createSeekButton('forward', 10);
 
-      // Insertar antes y después del botón de reproducción
+      // Insertar rewind antes del botón de Play
       controlbar.insertBefore(rewindBtn, playButton);
+
+      // Insertar forward después del botón de Play
       if (playButton.nextSibling) {
         controlbar.insertBefore(forwardBtn, playButton.nextSibling);
       } else {
@@ -200,17 +202,20 @@ _addSeekButtons() {
 _createSeekButton(type, seconds) {
   const button = document.createElement('button');
   button.className = `jw-seek-button jw-seek-${type} jw-reset jw-button-color`;
-  button.style.width = '32px';
-  button.style.height = '32px';
-  button.style.display = 'flex';
-  button.style.alignItems = 'center';
-  button.style.justifyContent = 'center';
-  button.style.border = 'none';
-  button.style.background = 'transparent';
-  button.style.padding = '0';
-  button.style.margin = '0 4px';
-  button.style.cursor = 'pointer';
+  Object.assign(button.style, {
+    width: '32px',
+    height: '32px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    border: 'none',
+    background: 'transparent',
+    padding: '0',
+    margin: '0 4px',
+    cursor: 'pointer',
+  });
 
+  // SVGs corregidos y distintos para cada botón
   const svg = type === 'rewind'
     ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
          <path d="M11 16.07V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84l4.77 3.53c.67.47 1.58 0 1.58-.81zm1.66-3.25l4.77 3.53c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84z"/>
