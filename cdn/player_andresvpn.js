@@ -10,33 +10,40 @@
  */
 
 (function () {
-
+  // Base64 de dominios permitidos (ej: flix-player.onrender.com)
   const dominiosPermitidosBase64 = [
     "ZmxpeC1wbGF5ZXIub25yZW5kZXIuY29t" // flix-player.onrender.com
   ];
 
+  // Calcula una firma simple del código fuente (opcional, opcionalmente puedes implementar SHA256)
+  const firmaOriginal = "hash123456789"; // <- reemplaza con la firma real si lo automatizas
 
-  function decodificar(base64) {
+  // Decodifica base64
+  const decodificar = b => {
     try {
-      return atob(base64);
-    } catch (e) {
-      console.error("Error al decodificar dominio:", base64);
+      return atob(b);
+    } catch {
       return "";
     }
+  };
+
+  // Detecta si está en iframe (uso externo embebido)
+  if (window.top !== window.self) {
+    document.body.innerHTML = "<h1>⚠️ Este reproductor no puede cargarse en iframes externos.</h1>";
+    throw new Error("Bloqueado por iframe");
   }
 
+  // Verifica el dominio real desde donde se carga el .js
+  const srcScript = document.currentScript?.src || "";
+  const hostScript = new URL(srcScript).hostname; 
+  // También verifica el dominio del documento donde se ejecuta
+  const hostPagina = window.location.hostname;
+  const dominioActual =  hostPagina;
+  // Lista final de dominios permitidos (decodificados)
+  const permitidos = dominiosPermitidosBase64.map(decodificar);
 
-  const dominioActual = window.location.hostname;
-
-
-  const estaPermitido = dominiosPermitidosBase64
-    .map(decodificar)
-    .includes(dominioActual);
-
-  if (!estaPermitido) {
-    console.warn(`[FlixPlayer] Acceso denegado para el dominio: ${dominioActual}`);
-
-
+  // Si alguno de los dominios NO está autorizado
+  if (!permitidos.includes(hostScript) || !permitidos.includes(hostPagina)) {
     document.body.innerHTML = `
       <!DOCTYPE html>
 <html lang="es">
@@ -283,13 +290,19 @@
     </div>
 </body>
 </html>
-    `;
-    throw new Error("Dominio no autorizado: " + dominioActual);
+      `;
+    throw new Error("Bloqueado por dominio no autorizado");
   }
 
-   
-  console.info(`[FlixPlayer] Dominio autorizado: ${dominioActual}`)
+  // Opción avanzada: verificar que no hayan editado el JS (requiere backend o firma SHA)
+  // const firmaCalculada = hashDeEsteScript(); // SHA256 o similar (requiere fetch o eval)
+  // if (firmaCalculada !== firmaOriginal) {
+  //   throw new Error("Integridad del script comprometida.");
+  // }
 
+  // Todo aprobado
+  console.info("[FlixPlayer] Dominio verificado: ✅")
+  
 const xy00 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3NlZ3Vyby5jc3M="
 class Player {
   constructor(containerId, config = {}) {
