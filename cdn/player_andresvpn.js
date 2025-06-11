@@ -168,37 +168,30 @@ class Player {
     }
   }
 
+
+  
 _addSeekButtons() {
-  // Esperar a que el control bar esté completamente cargado
   const waitForControlBar = setInterval(() => {
     const controlbar = document.querySelector('.jw-controlbar .jw-controlbar-center-group');
-    if (controlbar) {
+    const playButton = controlbar?.querySelector('.jw-icon-playback');
+
+    if (controlbar && playButton) {
       clearInterval(waitForControlBar);
-      
-      // Eliminar botones existentes si los hay
+
+      // Eliminar botones existentes
       const existingButtons = controlbar.querySelectorAll('.jw-seek-button');
       existingButtons.forEach(btn => btn.remove());
-      
-      // Crear contenedor para los botones
-      const buttonsContainer = document.createElement('div');
-      buttonsContainer.className = 'jw-seek-buttons-container';
-      buttonsContainer.style.display = 'flex';
-      buttonsContainer.style.alignItems = 'center';
-      buttonsContainer.style.margin = '0 10px';
-      
-      // Crear botones
+
+      // Crear botones individuales (no un solo contenedor)
       const rewindBtn = this._createSeekButton('rewind', -10);
       const forwardBtn = this._createSeekButton('forward', 10);
-      
-      buttonsContainer.appendChild(rewindBtn);
-      buttonsContainer.appendChild(forwardBtn);
-      
-      // Insertar los botones justo antes del botón de volumen
-      const volumeBtn = controlbar.querySelector('.jw-icon-volume');
-      if (volumeBtn) {
-        controlbar.insertBefore(buttonsContainer, volumeBtn);
+
+      // Insertar antes y después del botón de reproducción
+      controlbar.insertBefore(rewindBtn, playButton);
+      if (playButton.nextSibling) {
+        controlbar.insertBefore(forwardBtn, playButton.nextSibling);
       } else {
-        controlbar.appendChild(buttonsContainer); // Fallback si no encuentra el botón de volumen
+        controlbar.appendChild(forwardBtn);
       }
     }
   }, 100);
@@ -215,27 +208,25 @@ _createSeekButton(type, seconds) {
   button.style.border = 'none';
   button.style.background = 'transparent';
   button.style.padding = '0';
-  button.style.margin = '0 2px';
+  button.style.margin = '0 4px';
   button.style.cursor = 'pointer';
-  
-  // SVG mejorado para que coincida con el estilo de JWPlayer
-  const svg = type === 'rewind' ? 
-    `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-      <path d="M11 16.07V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84l4.77 3.53c.67.47 1.58 0 1.58-.81zm1.66-3.25l4.77 3.53c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84z"/>
-    </svg>` :
-    `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-      <path d="M13 7.93v8.14c0 .81.91 1.28 1.58.82l4.77-3.53c.62-.46.62-1.38 0-1.84l-4.77-3.53c-.67-.47-1.58.01-1.58.82zM11.34 11.18L6.57 7.65c-.66-.47-1.58.01-1.58.82v8.14c0 .81.91 1.28 1.58.82l4.77-3.53c.62-.46.62-1.38 0-1.84z"/>
-    </svg>`;
-  
+
+  const svg = type === 'rewind'
+    ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+         <path d="M11 16.07V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84l4.77 3.53c.67.47 1.58 0 1.58-.81zm1.66-3.25l4.77 3.53c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84z"/>
+       </svg>`
+    : `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+         <path d="M13 7.93v8.14c0 .81.91 1.28 1.58.82l4.77-3.53c.62-.46.62-1.38 0-1.84l-4.77-3.53c-.67-.47-1.58.01-1.58.82zM11.34 11.18L6.57 7.65c-.66-.47-1.58.01-1.58.82v8.14c0 .81.91 1.28 1.58.82l4.77-3.53c.62-.46.62-1.38 0-1.84z"/>
+       </svg>`;
+
   button.innerHTML = svg;
   button.addEventListener('click', (e) => {
     e.stopPropagation();
     this._seek(seconds);
   });
-  
+
   return button;
 }
-
   _seek(seconds) {
     if (!this._playerInstance) return;
     const newPosition = Math.min(
