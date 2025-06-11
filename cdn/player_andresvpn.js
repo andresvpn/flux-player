@@ -8,10 +8,11 @@
  * - Máximos clicks POR SESIÓN (no persiste)
  * - Monetización configurable
  */
+const xy00 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3NlZ3Vyby5jc3M="
 class Player {
   constructor(containerId, config = {}) {
     this._defaultConfig = {
-      css: 'https://flix-player.onrender.com/cdn/style.css',
+      css: atob(xy00),
       links: {
         admin: 'https://otieu.com/4/8798348',
         user: null
