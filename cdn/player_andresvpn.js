@@ -169,58 +169,77 @@ class Player {
   }
 
 _addSeekButtons() {
-  const tryInsert = setInterval(() => {
-    const leftControls = document.querySelector('.jw-controlbar .jw-controlbar-left-group');
-    if (leftControls) {
-      clearInterval(tryInsert);
-
-      // Elimina si ya existen
-      leftControls.querySelectorAll('.jw-seek-button').forEach(btn => btn.remove());
-
-      // Crea los botones
+  // Esperar a que el control bar esté completamente cargado
+  const waitForControlBar = setInterval(() => {
+    const controlbar = document.querySelector('.jw-controlbar .jw-controlbar-center-group');
+    if (controlbar) {
+      clearInterval(waitForControlBar);
+      
+      // Eliminar botones existentes si los hay
+      const existingButtons = controlbar.querySelectorAll('.flix-seek-button');
+      existingButtons.forEach(btn => btn.remove());
+      
+      // Crear contenedor para los botones
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.className = 'flix-seek-buttons-container';
+      buttonsContainer.style.display = 'flex';
+      buttonsContainer.style.alignItems = 'center';
+      
+      // Crear botones con tus SVGs exactos
       const rewindBtn = this._createSeekButton('rewind', -10);
       const forwardBtn = this._createSeekButton('forward', 10);
-
-      // Añade al grupo izquierdo para mejor visibilidad en mobile
-      leftControls.appendChild(rewindBtn);
-      leftControls.appendChild(forwardBtn);
+      
+      buttonsContainer.appendChild(rewindBtn);
+      buttonsContainer.appendChild(forwardBtn);
+      
+      // Insertar los botones en el control bar (antes del slider)
+      const timeSlider = controlbar.querySelector('.jw-slider-container');
+      if (timeSlider) {
+        controlbar.insertBefore(buttonsContainer, timeSlider);
+      } else {
+        controlbar.appendChild(buttonsContainer);
+      }
+      
+      // Añadir margen si es necesario
+      buttonsContainer.style.marginRight = '10px';
     }
   }, 100);
 }
 
 _createSeekButton(type, seconds) {
   const button = document.createElement('button');
-  button.className = `jw-seek-button jw-seek-${type} jw-reset jw-button-color`;
+  button.className = `flix-seek-button flix-seek-${type} jw-reset`;
   button.setAttribute('aria-label', type === 'rewind' ? 'Retroceder 10 segundos' : 'Avanzar 10 segundos');
-
+  
+  // Estilos para que coincida con JWPlayer
   Object.assign(button.style, {
-    width: '36px',
-    height: '36px',
+    width: '32px',
+    height: '32px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     border: 'none',
     background: 'transparent',
     padding: '0',
-    margin: '0 4px',
+    margin: '0 2px',
     cursor: 'pointer',
+    color: 'inherit', // Hereda el color del tema
   });
-
-  // SVG del botón (idéntico al funcional)
-  const svg = type === 'rewind'
-    ? `<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-rewind" viewBox="0 0 1024 1024" focusable="false"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7377"></path></svg>`
-    : `<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-forward" viewBox="0 0 1024 1024" focusable="false"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7407"></path></svg>`;
-
+  
+  // Usando tus SVGs exactos
+  const svg = type === 'rewind' 
+    ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="24" height="24" class="flix-seek-icon"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" fill="currentColor"></path></svg>`
+    : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="24" height="24" class="flix-seek-icon"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" fill="currentColor"></path></svg>`;
+  
   button.innerHTML = svg;
-
+  
   button.addEventListener('click', (e) => {
     e.stopPropagation();
-    this._seek(seconds); // Tu función
+    this._seek(seconds);
   });
-
+  
   return button;
 }
-
 
   
   _seek(seconds) {
