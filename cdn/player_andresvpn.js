@@ -168,30 +168,22 @@ class Player {
     }
   }
 
-
 _addSeekButtons() {
-  const waitForControlBar = setInterval(() => {
-    const rightControls = document.querySelector('.jw-controlbar .jw-controlbar-right-group');
-    if (rightControls) {
-      clearInterval(waitForControlBar);
+  const tryInsert = setInterval(() => {
+    const leftControls = document.querySelector('.jw-controlbar .jw-controlbar-left-group');
+    if (leftControls) {
+      clearInterval(tryInsert);
 
-      // Elimina botones anteriores si ya están
-      const existingButtons = rightControls.querySelectorAll('.jw-seek-button');
-      existingButtons.forEach(btn => btn.remove());
+      // Elimina si ya existen
+      leftControls.querySelectorAll('.jw-seek-button').forEach(btn => btn.remove());
 
-      // Crear botones nuevos con SVG funcionales
+      // Crea los botones
       const rewindBtn = this._createSeekButton('rewind', -10);
       const forwardBtn = this._createSeekButton('forward', 10);
 
-      // Insertar antes del botón de volumen (o al inicio si no hay)
-      const volumeBtn = rightControls.querySelector('.jw-icon-volume');
-      if (volumeBtn) {
-        rightControls.insertBefore(forwardBtn, volumeBtn);
-        rightControls.insertBefore(rewindBtn, volumeBtn);
-      } else {
-        rightControls.appendChild(rewindBtn);
-        rightControls.appendChild(forwardBtn);
-      }
+      // Añade al grupo izquierdo para mejor visibilidad en mobile
+      leftControls.appendChild(rewindBtn);
+      leftControls.appendChild(forwardBtn);
     }
   }, 100);
 }
@@ -201,7 +193,6 @@ _createSeekButton(type, seconds) {
   button.className = `jw-seek-button jw-seek-${type} jw-reset jw-button-color`;
   button.setAttribute('aria-label', type === 'rewind' ? 'Retroceder 10 segundos' : 'Avanzar 10 segundos');
 
-  // Estilos inline
   Object.assign(button.style, {
     width: '36px',
     height: '36px',
@@ -215,17 +206,16 @@ _createSeekButton(type, seconds) {
     cursor: 'pointer',
   });
 
-  // SVG del código funcional (adaptado a tus nombres)
+  // SVG del botón (idéntico al funcional)
   const svg = type === 'rewind'
     ? `<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-rewind" viewBox="0 0 1024 1024" focusable="false"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7377"></path></svg>`
     : `<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-forward" viewBox="0 0 1024 1024" focusable="false"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7407"></path></svg>`;
 
   button.innerHTML = svg;
 
-  // Evento que usa tu función this._seek
   button.addEventListener('click', (e) => {
     e.stopPropagation();
-    this._seek(seconds);
+    this._seek(seconds); // Tu función
   });
 
   return button;
