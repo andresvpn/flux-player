@@ -249,16 +249,24 @@
             description: "FlixPlayer",
             image: "https://media.themoviedb.org/t/p/w500_and_h282_face/xtdybjRRZ15mCrPOvEld305myys.jpg",
             file: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        } 
+    },
+        links: {
+            user: "https://otieu.com/4/8798348"
+        },
+        monetization: {
+                enabled: true,
+                initialDelay: 15000, // 15 segundos antes de activar la monetización
+                cooldown: 20000, // 20 segundos entre clics
+                maxClicks: 3, // Máximo 3 clics por sesión de video
+                autoClicks: {
+                    enabled: true,
+                    interval: 240000, // 4 minutos entre clics automáticos
+                    maxDaily: 15 // Límite diario de clics automáticos
+                }
+            }
+        
     })
-    player_1.setMonetization({
-    user: "https://otieu.com/4/8798348"  // String - Enlace personalizado
-});
-      player_1.setClickTraffic({
-    enabled: true,                  // Boolean - Habilitar/deshabilitar
-    interval: 15000,               // Number - Intervalo en milisegundos
-    maxClicks: 30                  // Number - Máximo de clics permitidos
-});
+
 
     //player 2 
     const player_2 = new Player("player_2", {
