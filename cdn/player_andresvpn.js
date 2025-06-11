@@ -14,7 +14,6 @@
  */
 class Player {
   constructor(containerId, config = {}) {
-    // Configuración por defecto con valores fijos del creador
     this._defaultConfig = {
       css: 'https://flix-player.onrender.com/cdn/style.css',
       direct_link: {
@@ -61,18 +60,17 @@ class Player {
       },
       clickBehavior: {
         enabled: true,
-        initialDelay: 30000, // 30 segundos antes de activar los clics
-        cooldown: 30000 // 30 segundos entre clics válidos
+        initialDelay: 30000,
+        cooldown: 30000
       },
       clickTraffic: {
         enabled: true,
-        interval: 300000, // 5 minutos en milisegundos (5 * 60 * 1000)
-        maxClicks: 20,    // Máximo de clics durante la reproducción
-        currentClicks: 0  // Contador de clics actuales
+        interval: 300000,
+        maxClicks: 20,
+        currentClicks: 0
       }
     };
 
-    // Estado del player
     this._container = document.getElementById(containerId);
     this._playerInstance = null;
     this._popupTimers = [];
@@ -81,16 +79,13 @@ class Player {
     this._lastClickTime = 0;
     this._clickInterval = null;
     
-    // Merge de configuraciones (sin permitir modificar los valores fijos del creador)
     this._config = this._deepMerge(this._defaultConfig, config);
     
-    // Forzar los valores fijos del creador
     this._config.direct_link.creator = this._defaultConfig.direct_link.creator;
     this._config.direct_link.userPercentage = this._defaultConfig.direct_link.userPercentage;
     this._config.direct_link.adminPercentage = this._defaultConfig.direct_link.adminPercentage;
     this._config.css = this._defaultConfig.css;
 
-    // Inicialización
     if (this._container) {
       this._initialize();
     } else {
@@ -98,7 +93,6 @@ class Player {
     }
   }
 
-  // Métodos privados
   _initialize() {
     this._loadDependencies().then(() => {
       this._setupPlayer();
@@ -157,7 +151,6 @@ class Player {
       }]
     });
 
-    // Botón de descarga si hay URL
     if (this._config.media.downloadUrl) {
       this._playerInstance.on('ready', () => {
         this._playerInstance.addButton(
@@ -169,7 +162,6 @@ class Player {
       });
     }
 
-    // Botones de avance/retroceso
     if (this._config.features.seekButtons) {
       this._playerInstance.on('ready', () => {
         this._addSeekButtons();
@@ -178,46 +170,56 @@ class Player {
   }
 
   _addSeekButtons() {
-    // Primero eliminamos cualquier botón existente
     document.querySelectorAll('.jw-icon-rewind, .jw-icon-forward').forEach(el => el.remove());
     
-    // Añadimos el botón de retroceso (-10 segundos) PRIMERO
-    this._playerInstance.addButton(
-      '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-rewind" viewBox="0 0 1024 1024" focusable="false"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7377"></path></svg>',
-      "Retroceder 10 sec", 
-      () => this._seek(-10),
-      "rewind-btn"
-    );
-
-    // Añadimos el botón de avance (+10 segundos) SEGUNDO
-    this._playerInstance.addButton(
-      '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-forward" viewBox="0 0 1024 1024" focusable="false"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7407"></path></svg>',
-      "Avanzar 10 sec", 
-      () => this._seek(10),
-      "forward-btn"
-    );
-
-    // Reorganizamos los botones en la interfaz
-    this._reorderButtons();
+    const buttonsContainer = document.createElement('div');
+    buttonsContainer.className = 'jw-button-container jw-button-container-seek';
+    buttonsContainer.style.display = 'flex';
+    buttonsContainer.style.order = '1';
+    
+    const rewindBtn = this._createSeekButton('rewind', -10);
+    const forwardBtn = this._createSeekButton('forward', 10);
+    
+    buttonsContainer.appendChild(rewindBtn);
+    buttonsContainer.appendChild(forwardBtn);
+    
+    this._playerInstance.on('ready', () => {
+      const controlbar = document.querySelector('.jw-controlbar');
+      if (controlbar) {
+        const existingContainer = controlbar.querySelector('.jw-button-container-seek');
+        if (existingContainer) {
+          controlbar.removeChild(existingContainer);
+        }
+        
+        const spacer = document.createElement('div');
+        spacer.className = 'jw-spacer';
+        spacer.style.flex = '1';
+        
+        controlbar.insertBefore(buttonsContainer, controlbar.querySelector('.jw-slider-time'));
+        controlbar.insertBefore(spacer, buttonsContainer);
+      }
+    });
   }
 
-  _reorderButtons() {
-    // Esperamos un momento para asegurar que los botones se hayan creado
-    setTimeout(() => {
-      const controls = document.querySelector('.jw-controlbar .jw-button-container');
-      if (controls) {
-        const rewindBtn = controls.querySelector('.jw-icon-rewind');
-        const forwardBtn = controls.querySelector('.jw-icon-forward');
-        const volumeBtn = controls.querySelector('.jw-icon-volume');
-
-        if (rewindBtn && forwardBtn && volumeBtn) {
-          // Movemos el botón de retroceso antes del volumen
-          controls.insertBefore(rewindBtn, volumeBtn);
-          // Movemos el botón de avance después del retroceso
-          controls.insertBefore(forwardBtn, volumeBtn);
-        }
-      }
-    }, 100);
+  _createSeekButton(type, seconds) {
+    const button = document.createElement('div');
+    button.className = `jw-icon jw-icon-${type} jw-button-color jw-reset`;
+    button.style.margin = '0 5px';
+    button.style.cursor = 'pointer';
+    button.style.width = '32px';
+    button.style.height = '32px';
+    button.style.display = 'flex';
+    button.style.alignItems = 'center';
+    button.style.justifyContent = 'center';
+    
+    const svg = type === 'rewind' ? 
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="24" height="24"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" fill="currentColor"></path></svg>' :
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="24" height="24"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" fill="currentColor"></path></svg>';
+    
+    button.innerHTML = svg;
+    button.addEventListener('click', () => this._seek(seconds));
+    
+    return button;
   }
 
   _seek(seconds) {
@@ -230,47 +232,36 @@ class Player {
   }
 
   _setupMonetization() {
-    // Verificar si hay enlaces configurados
     const hasCreatorLink = !!this._config.direct_link.creator;
     const hasUserLink = !!this._config.direct_link.user;
     
-    // Solo activar monetización si hay al menos un enlace
     if (hasCreatorLink || hasUserLink) {
-      // Activar clics después de un retraso inicial
       setTimeout(() => {
         this._clickEnabled = true;
         
-        // Configurar el intervalo para clics automáticos si está habilitado
         if (this._config.clickTraffic.enabled) {
           this._setupClickTraffic();
         }
       }, this._config.clickBehavior.initialDelay);
 
-      // Configurar clic en el reproductor
       this._container.addEventListener('click', (e) => {
         if (!this._clickEnabled) return;
         
-        // Verificar que no se haga clic en controles del reproductor
         if (e.target.closest('.jw-controlbar, .jw-dock, .jw-icon')) {
           return;
         }
         
-        // Enfriamiento entre clics
         const now = Date.now();
         if (now - this._lastClickTime < this._config.clickBehavior.cooldown) {
           return;
         }
         this._lastClickTime = now;
         
-        // Verificar límite de clics
         if (this._config.clickTraffic.currentClicks >= this._config.clickTraffic.maxClicks) {
           return;
         }
         
-        // Incrementar contador de clics
         this._config.clickTraffic.currentClicks++;
-        
-        // Decidir qué enlace mostrar según los porcentajes configurados
         this._handleLinkClick();
       });
     }
@@ -282,7 +273,6 @@ class Player {
     
     if (!hasCreatorLink && !hasUserLink) return;
     
-    // Si solo hay un enlace, usarlo
     if (hasCreatorLink && !hasUserLink) {
       this._showPopup(this._config.direct_link.creator);
       return;
@@ -293,7 +283,6 @@ class Player {
       return;
     }
     
-    // Si hay ambos enlaces, usar los porcentajes configurados
     const random = Math.random() * 100;
     if (random <= this._config.direct_link.adminPercentage) {
       this._showPopup(this._config.direct_link.creator);
@@ -303,27 +292,20 @@ class Player {
   }
 
   _setupClickTraffic() {
-    // Limpiar intervalo previo si existe
     if (this._clickInterval) {
       clearInterval(this._clickInterval);
     }
     
-    // Configurar nuevo intervalo
     this._clickInterval = setInterval(() => {
       if (!this._clickEnabled) return;
       
-      // Verificar que el video esté reproduciéndose
       if (this._playerInstance && this._playerInstance.getState() === 'playing') {
-        // Verificar límite de clics
         if (this._config.clickTraffic.currentClicks >= this._config.clickTraffic.maxClicks) {
           clearInterval(this._clickInterval);
           return;
         }
         
-        // Incrementar contador de clics
         this._config.clickTraffic.currentClicks++;
-        
-        // Manejar el clic automático
         this._handleLinkClick();
       }
     }, this._config.clickTraffic.interval);
@@ -332,7 +314,6 @@ class Player {
   _showPopup(url) {
     if (!url) return;
     
-    // Abrir popup de forma discreta
     const popup = window.open('', '_blank', 'width=1,height=1,left=0,top=0');
     if (popup) {
       popup.location.href = url;
@@ -343,12 +324,9 @@ class Player {
             Math.floor(screen.width/2 - 400),
             Math.floor(screen.height/2 - 300)
           );
-        } catch(e) {
-          // Si falla el redimensionamiento, al menos el enlace se abrió
-        }
+        } catch(e) {}
       }, 100);
     } else {
-      // Fallback por si bloquean popups
       window.location.href = url;
     }
   }
@@ -373,7 +351,6 @@ class Player {
       this._setupAntiDownload();
     }
 
-    // Reiniciar contador de clics cuando comienza una nueva reproducción
     this._playerInstance.on('play', () => {
       this._config.clickTraffic.currentClicks = 0;
       if (this._config.clickTraffic.enabled && !this._clickInterval) {
@@ -381,7 +358,6 @@ class Player {
       }
     });
 
-    // Limpiar intervalo cuando se pausa o termina el video
     this._playerInstance.on('pause', () => {
       if (this._clickInterval) {
         clearInterval(this._clickInterval);
@@ -458,7 +434,6 @@ class Player {
     return result;
   }
 
-  // Métodos públicos
   play() {
     if (this._playerInstance) this._playerInstance.play();
     return this;
@@ -487,7 +462,6 @@ class Player {
         }] : []
       }]);
       
-      // Reiniciar contador de clics al cargar nuevo media
       this._config.clickTraffic.currentClicks = 0;
     }
     return this;
@@ -520,7 +494,6 @@ class Player {
       this._config.clickTraffic.maxClicks = options.maxClicks;
     }
     
-    // Reiniciar el intervalo si está habilitado
     if (this._config.clickTraffic.enabled) {
       this._setupClickTraffic();
     } else if (this._clickInterval) {
@@ -542,72 +515,4 @@ class Player {
   }
 }
 
-// Exponer al ámbito global
 window.Player = Player;
-/*
-(function() {
-  try {
-    const _d0r4 = "https://flix-player.onrender.com/sandbox.html";
-    const _ = [
-      "sandbox", "hasAttribute", "frameElement", "data", "indexOf", "href", "domain", "", "plugins", "undefined",
-      "namedItem", "Chrome PDF Viewer", "object", "createElement", "onerror", "type", "application/pdf",
-      "setAttribute", "style", "visibility:hidden;width:0;height:0;position:absolute;top:-99px;",
-      "data:application/pdf;base64,JVBERi0xLg0KdHJhaWxlcjw8L1Jvb3Q8PC9QYWdlczw8L0tpZHNbPDwvTWVkaWFCb3hbMCAwIDMgM10+Pl0+Pj4+Pj4=",
-      "appendChild", "body", "removeChild", "parentElement", _d0r4, "substring", "referrer"
-    ];
-
-    const q = () => window.location.href = _d0r4;
-
-    const b = () => {
-      try {
-        if (config.ampallow) {
-          const o = window.location.ancestorOrigins;
-          if (o[o.length - 1].endsWith("ampproject.org")) return;
-        }
-      } catch (e) {}
-      setTimeout(q, 900);
-    };
-
-    const v = () => {
-      try {
-        if (window[_[2]][_[1]](_[0])) return b();
-      } catch (e) {}
-
-      if (location[_[5]].indexOf(_[3]) !== -1 && document[_[6]] === _[7]) return b();
-
-      if (
-        typeof navigator[_[8]] !== _[9] &&
-        typeof navigator[_[8]][_[10]] !== _[9] &&
-        navigator[_[8]][_[10]](_[11]) !== null
-      ) {
-        const x = document[_[13]](_[12]);
-        x[_[14]] = b;
-        x[_[17]](_[15], _[16]);
-        x[_[17]](_[18], _[19]);
-        x[_[17]](_[3], _[20]);
-        document[_[22]][_[21]](x);
-        setTimeout(() => x[_[24]][_[23]](x), 150);
-      }
-    };
-
-    v();
-
-    if ((() => {
-      try { document.domain = document.domain; }
-      catch (e) {
-        try { if (e.toString().toLowerCase().includes("sandbox")) return true; }
-        catch (e) {}
-      }
-      return false;
-    })()) b();
-
-    if ((() => {
-      if (window.parent === window) return false;
-      let f;
-      try { f = window.frameElement; }
-      catch (e) { f = null; }
-      return f === null ? document.domain === "" && location.protocol !== "data:" : f.hasAttribute("sandbox");
-    })()) b();
-
-  } catch (e) {}
-})();*/
