@@ -221,6 +221,7 @@ class Player {
   }
 
   _setupMonetization() {
+    // Solo activar monetización si está habilitada y hay al menos un enlace configurado
     if (!this._config.monetization.enabled || 
         (!this._config.links.admin && !this._config.links.user)) {
       return;
