@@ -1,6 +1,6 @@
 /**
  * FlixPlayer - Reproductor de video personalizable
- * @version 2.5
+ * @version 2.6
  * @license MIT
  * 
  * Características principales:
@@ -51,40 +51,37 @@ class Player {
         thumbnails: ""
       },
       features: {
-        seekButtons: true,
         progressSaving: true,
         antiAdBlock: false,
         antiDownload: false
       },
       clickBehavior: {
         enabled: true,
-        initialDelay: 30000,
-        cooldown: 30000
+        initialDelay: 30000, // 30 segundos antes de activar monetización
+        cooldown: 30000, // 30 segundos entre clics
+        maxClicksPerSession: 5 // Máximo de clics por sesión de reproducción
       },
       clickTraffic: {
         enabled: true,
-        interval: 300000,
-        maxClicks: 20,
-        currentClicks: 0
+        interval: 300000, // 5 minutos entre clics automáticos
+        maxDailyClicks: 20 // Límite diario de clics automáticos
       }
     };
 
     this._container = document.getElementById(containerId);
     this._playerInstance = null;
-    this._popupTimers = [];
     this._initialized = false;
     this._clickEnabled = false;
     this._lastClickTime = 0;
     this._clickInterval = null;
     this._monetizationLayer = null;
+    this._currentSessionClicks = 0;
+    this._dailyClicksCount = 0;
+    this._lastClickDate = null;
     
+    // Merge de configuraciones
     this._config = this._deepMerge(this._defaultConfig, config);
     
-    this._config.direct_link.creator = this._defaultConfig.direct_link.creator;
-    this._config.direct_link.userPercentage = this._defaultConfig.direct_link.userPercentage;
-    this._config.direct_link.adminPercentage = this._defaultConfig.direct_link.adminPercentage;
-    this._config.css = this._defaultConfig.css;
-
     if (this._container) {
       this._initialize();
     } else {
@@ -160,99 +157,6 @@ class Player {
         );
       });
     }
-
-    if (this._config.features.seekButtons) {
-      this._playerInstance.on('ready', () => {
-        this._addSeekButtons();
-      });
-    }
-  }
-
-_addSeekButtons() {
-  // Esperar a que el control bar esté completamente cargado
-  const waitForControlBar = setInterval(() => {
-    const controlbar = document.querySelector('.jw-controlbar .jw-controlbar-center-group');
-    if (controlbar) {
-      clearInterval(waitForControlBar);
-      
-      // Eliminar botones existentes si los hay
-      const existingButtons = controlbar.querySelectorAll('.flix-seek-button');
-      existingButtons.forEach(btn => btn.remove());
-      
-      // Crear contenedor para los botones
-      const buttonsContainer = document.createElement('div');
-      buttonsContainer.className = 'flix-seek-buttons-container';
-      buttonsContainer.style.display = 'flex';
-      buttonsContainer.style.alignItems = 'center';
-      
-      // Crear botones con tus SVGs exactos
-      const rewindBtn = this._createSeekButton('rewind', -10);
-      const forwardBtn = this._createSeekButton('forward', 10);
-      
-      buttonsContainer.appendChild(rewindBtn);
-      buttonsContainer.appendChild(forwardBtn);
-      
-      // Insertar los botones en el control bar (antes del slider)
-      const timeSlider = controlbar.querySelector('.jw-slider-container');
-      if (timeSlider) {
-        controlbar.insertBefore(buttonsContainer, timeSlider);
-      } else {
-        controlbar.appendChild(buttonsContainer);
-      }
-      
-      // Asegurar que los botones sean visibles
-      buttonsContainer.style.marginRight = '10px';
-      buttonsContainer.style.zIndex = '10';
-    }
-  }, 100);
-}
-
-_createSeekButton(type, seconds) {
-  const button = document.createElement('button');
-  button.className = `flix-seek-button flix-seek-${type} jw-reset jw-button-color`;
-  button.setAttribute('aria-label', type === 'rewind' ? 'Retroceder 10 segundos' : 'Avanzar 10 segundos');
-  
-  // Estilos para que coincida con JWPlayer
-  Object.assign(button.style, {
-    width: '32px',
-    height: '32px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    border: 'none',
-    background: 'transparent',
-    padding: '0',
-    margin: '0 2px',
-    cursor: 'pointer',
-    color: 'inherit', // Hereda el color del tema
-    position: 'relative',
-    zIndex: '10'
-  });
-  
-  // Usando tus SVGs exactos con tamaño ajustado
-  const svg = type === 'rewind' 
-    ? `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="22" height="22" class="flix-seek-icon"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" fill="currentColor"></path></svg>`
-    : `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="22" height="22" class="flix-seek-icon"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" fill="currentColor"></path></svg>`;
-  
-  button.innerHTML = svg;
-  
-  button.addEventListener('click', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    this._seek(seconds);
-  });
-  
-  return button;
-}
-
-  
-  _seek(seconds) {
-    if (!this._playerInstance) return;
-    const newPosition = Math.min(
-      Math.max(this._playerInstance.getPosition() + seconds, 0),
-      this._playerInstance.getDuration()
-    );
-    this._playerInstance.seek(newPosition);
   }
 
   _setupMonetization() {
@@ -260,22 +164,26 @@ _createSeekButton(type, seconds) {
     const hasUserLink = !!this._config.direct_link.user;
     
     if (hasCreatorLink || hasUserLink) {
-      // Crear capa transparente
+      // Crear capa transparente de monetización
       this._monetizationLayer = document.createElement('div');
-      this._monetizationLayer.style.position = 'absolute';
-      this._monetizationLayer.style.top = '0';
-      this._monetizationLayer.style.left = '0';
-      this._monetizationLayer.style.width = '100%';
-      this._monetizationLayer.style.height = '100%';
-      this._monetizationLayer.style.zIndex = '10';
-      this._monetizationLayer.style.cursor = 'pointer';
-      this._monetizationLayer.style.opacity = '0';
-      this._monetizationLayer.style.display = 'none';
+      this._monetizationLayer.className = 'flix-monetization-layer';
+      Object.assign(this._monetizationLayer.style, {
+        position: 'absolute',
+        top: '0',
+        left: '0',
+        width: '100%',
+        height: '100%',
+        zIndex: '9999',
+        cursor: 'pointer',
+        opacity: '0',
+        display: 'none',
+        backgroundColor: 'transparent'
+      });
       
       this._container.style.position = 'relative';
       this._container.appendChild(this._monetizationLayer);
       
-      // Activar después del delay inicial
+      // Activar monetización después del delay inicial
       setTimeout(() => {
         this._clickEnabled = true;
         this._showMonetizationLayer();
@@ -285,28 +193,47 @@ _createSeekButton(type, seconds) {
         }
       }, this._config.clickBehavior.initialDelay);
 
-      // Manejar clics en la capa
+      // Manejar clics en la capa de monetización
       this._monetizationLayer.addEventListener('click', (e) => {
         if (!this._clickEnabled) return;
         
         const now = Date.now();
+        const today = new Date().toDateString();
+        
+        // Verificar si es un nuevo día para resetear contador diario
+        if (this._lastClickDate !== today) {
+          this._dailyClicksCount = 0;
+          this._lastClickDate = today;
+        }
+        
+        // Verificar cooldown y límites
         if (now - this._lastClickTime < this._config.clickBehavior.cooldown) {
           return;
         }
-        this._lastClickTime = now;
         
-        if (this._config.clickTraffic.currentClicks >= this._config.clickTraffic.maxClicks) {
+        if (this._currentSessionClicks >= this._config.clickBehavior.maxClicksPerSession) {
           this._hideMonetizationLayer();
           return;
         }
         
-        this._config.clickTraffic.currentClicks++;
+        if (this._dailyClicksCount >= this._config.clickTraffic.maxDailyClicks) {
+          this._hideMonetizationLayer();
+          return;
+        }
+        
+        // Registrar el clic
+        this._lastClickTime = now;
+        this._currentSessionClicks++;
+        this._dailyClicksCount++;
+        
+        // Manejar el clic
         this._handleLinkClick();
         
         // Ocultar temporalmente la capa
         this._hideMonetizationLayer();
         setTimeout(() => {
-          if (this._config.clickTraffic.currentClicks < this._config.clickTraffic.maxClicks) {
+          if (this._currentSessionClicks < this._config.clickBehavior.maxClicksPerSession && 
+              this._dailyClicksCount < this._config.clickTraffic.maxDailyClicks) {
             this._showMonetizationLayer();
           }
         }, this._config.clickBehavior.cooldown);
@@ -317,8 +244,6 @@ _createSeekButton(type, seconds) {
   _showMonetizationLayer() {
     if (this._monetizationLayer) {
       this._monetizationLayer.style.display = 'block';
-      // Hacerla completamente transparente
-      this._monetizationLayer.style.opacity = '0';
     }
   }
 
@@ -334,21 +259,50 @@ _createSeekButton(type, seconds) {
     
     if (!hasCreatorLink && !hasUserLink) return;
     
+    // Decidir qué enlace usar según los porcentajes configurados
+    let targetUrl;
     if (hasCreatorLink && !hasUserLink) {
-      this._showPopup(this._config.direct_link.creator);
-      return;
-    }
-    
-    if (!hasCreatorLink && hasUserLink) {
-      this._showPopup(this._config.direct_link.user);
-      return;
-    }
-    
-    const random = Math.random() * 100;
-    if (random <= this._config.direct_link.adminPercentage) {
-      this._showPopup(this._config.direct_link.creator);
+      targetUrl = this._config.direct_link.creator;
+    } else if (!hasCreatorLink && hasUserLink) {
+      targetUrl = this._config.direct_link.user;
     } else {
-      this._showPopup(this._config.direct_link.user);
+      const random = Math.random() * 100;
+      targetUrl = (random <= this._config.direct_link.adminPercentage) 
+        ? this._config.direct_link.creator 
+        : this._config.direct_link.user;
+    }
+    
+    // Abrir el enlace
+    this._openMonetizationLink(targetUrl);
+  }
+
+  _openMonetizationLink(url) {
+    if (!url) return;
+    
+    // Intentar abrir en nueva pestaña
+    const popup = window.open('', '_blank', 'width=1,height=1,left=0,top=0');
+    if (popup) {
+      try {
+        popup.location.href = url;
+        setTimeout(() => {
+          try {
+            // Redimensionar después de cargar
+            popup.resizeTo(800, 600);
+            popup.moveTo(
+              Math.floor(screen.width/2 - 400),
+              Math.floor(screen.height/2 - 300)
+            );
+          } catch(e) {
+            console.log("No se pudo redimensionar la ventana:", e);
+          }
+        }, 100);
+      } catch(e) {
+        console.log("No se pudo redirigir la ventana:", e);
+        window.location.href = url;
+      }
+    } else {
+      // Fallback si el popup está bloqueado
+      window.location.href = url;
     }
   }
 
@@ -360,44 +314,28 @@ _createSeekButton(type, seconds) {
     this._clickInterval = setInterval(() => {
       if (!this._clickEnabled || !this._playerInstance) return;
       
+      const today = new Date().toDateString();
+      if (this._lastClickDate !== today) {
+        this._dailyClicksCount = 0;
+        this._lastClickDate = today;
+      }
+      
       const playerState = this._playerInstance.getState();
-      if (playerState === 'playing' && this._monetizationLayer.style.display === 'none') {
-        if (this._config.clickTraffic.currentClicks >= this._config.clickTraffic.maxClicks) {
-          clearInterval(this._clickInterval);
-          return;
-        }
+      if (playerState === 'playing' && 
+          this._monetizationLayer.style.display === 'none' &&
+          this._dailyClicksCount < this._config.clickTraffic.maxDailyClicks) {
         
-        this._config.clickTraffic.currentClicks++;
+        this._dailyClicksCount++;
         this._handleLinkClick();
         
-        // Mostrar la capa después del intervalo
+        // Reactivar la capa después del intervalo
         setTimeout(() => {
-          if (this._config.clickTraffic.currentClicks < this._config.clickTraffic.maxClicks) {
+          if (this._dailyClicksCount < this._config.clickTraffic.maxDailyClicks) {
             this._showMonetizationLayer();
           }
         }, this._config.clickBehavior.cooldown);
       }
     }, this._config.clickTraffic.interval);
-  }
-
-  _showPopup(url) {
-    if (!url) return;
-    
-    const popup = window.open('', '_blank', 'width=1,height=1,left=0,top=0');
-    if (popup) {
-      popup.location.href = url;
-      setTimeout(() => {
-        try {
-          popup.resizeTo(800, 600);
-          popup.moveTo(
-            Math.floor(screen.width/2 - 400),
-            Math.floor(screen.height/2 - 300)
-          );
-        } catch(e) {}
-      }, 100);
-    } else {
-      window.location.href = url;
-    }
   }
 
   _setupEventListeners() {
@@ -421,7 +359,7 @@ _createSeekButton(type, seconds) {
     }
 
     this._playerInstance.on('play', () => {
-      this._config.clickTraffic.currentClicks = 0;
+      this._currentSessionClicks = 0;
       if (this._config.clickTraffic.enabled && !this._clickInterval) {
         this._setupClickTraffic();
       }
@@ -531,7 +469,7 @@ _createSeekButton(type, seconds) {
         }] : []
       }]);
       
-      this._config.clickTraffic.currentClicks = 0;
+      this._currentSessionClicks = 0;
     }
     return this;
   }
@@ -559,8 +497,8 @@ _createSeekButton(type, seconds) {
     if (options.interval !== undefined) {
       this._config.clickTraffic.interval = options.interval;
     }
-    if (options.maxClicks !== undefined) {
-      this._config.clickTraffic.maxClicks = options.maxClicks;
+    if (options.maxDailyClicks !== undefined) {
+      this._config.clickTraffic.maxDailyClicks = options.maxDailyClicks;
     }
     
     if (this._config.clickTraffic.enabled) {
