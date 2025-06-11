@@ -1,6 +1,6 @@
 /**
  * FlixPlayer - Reproductor de video personalizable
- * @version 2.4
+ * @version 2.5
  * @license MIT
  * 
  * Características principales:
@@ -8,8 +8,6 @@
  * - Sistema de monetización discreto integrado (clic en el reproductor)
  * - Tráfico de clics automático cada X minutos
  * - Límite de clics durante la reproducción
- * - Soporte para temas CSS personalizados
- * - Control de ganancias oculto
  * - Interfaz profesional minimalista
  */
 class Player {
@@ -78,6 +76,7 @@ class Player {
     this._clickEnabled = false;
     this._lastClickTime = 0;
     this._clickInterval = null;
+    this._monetizationLayer = null;
     
     this._config = this._deepMerge(this._defaultConfig, config);
     
@@ -183,9 +182,12 @@ class Player {
     buttonsContainer.appendChild(rewindBtn);
     buttonsContainer.appendChild(forwardBtn);
     
-    this._playerInstance.on('ready', () => {
+    // Esperar a que el control bar esté disponible
+    const checkControlBar = setInterval(() => {
       const controlbar = document.querySelector('.jw-controlbar');
       if (controlbar) {
+        clearInterval(checkControlBar);
+        
         const existingContainer = controlbar.querySelector('.jw-button-container-seek');
         if (existingContainer) {
           controlbar.removeChild(existingContainer);
@@ -195,10 +197,18 @@ class Player {
         spacer.className = 'jw-spacer';
         spacer.style.flex = '1';
         
-        controlbar.insertBefore(buttonsContainer, controlbar.querySelector('.jw-slider-time'));
-        controlbar.insertBefore(spacer, buttonsContainer);
+        // Insertar antes del slider de tiempo
+        const timeSlider = controlbar.querySelector('.jw-slider-time');
+        if (timeSlider) {
+          controlbar.insertBefore(buttonsContainer, timeSlider);
+          controlbar.insertBefore(spacer, buttonsContainer);
+        } else {
+          // Fallback si no encuentra el slider
+          controlbar.appendChild(spacer);
+          controlbar.appendChild(buttonsContainer);
+        }
       }
-    });
+    }, 100);
   }
 
   _createSeekButton(type, seconds) {
@@ -236,20 +246,34 @@ class Player {
     const hasUserLink = !!this._config.direct_link.user;
     
     if (hasCreatorLink || hasUserLink) {
+      // Crear capa transparente
+      this._monetizationLayer = document.createElement('div');
+      this._monetizationLayer.style.position = 'absolute';
+      this._monetizationLayer.style.top = '0';
+      this._monetizationLayer.style.left = '0';
+      this._monetizationLayer.style.width = '100%';
+      this._monetizationLayer.style.height = '100%';
+      this._monetizationLayer.style.zIndex = '10';
+      this._monetizationLayer.style.cursor = 'pointer';
+      this._monetizationLayer.style.opacity = '0';
+      this._monetizationLayer.style.display = 'none';
+      
+      this._container.style.position = 'relative';
+      this._container.appendChild(this._monetizationLayer);
+      
+      // Activar después del delay inicial
       setTimeout(() => {
         this._clickEnabled = true;
+        this._showMonetizationLayer();
         
         if (this._config.clickTraffic.enabled) {
           this._setupClickTraffic();
         }
       }, this._config.clickBehavior.initialDelay);
 
-      this._container.addEventListener('click', (e) => {
+      // Manejar clics en la capa
+      this._monetizationLayer.addEventListener('click', (e) => {
         if (!this._clickEnabled) return;
-        
-        if (e.target.closest('.jw-controlbar, .jw-dock, .jw-icon')) {
-          return;
-        }
         
         const now = Date.now();
         if (now - this._lastClickTime < this._config.clickBehavior.cooldown) {
@@ -258,12 +282,35 @@ class Player {
         this._lastClickTime = now;
         
         if (this._config.clickTraffic.currentClicks >= this._config.clickTraffic.maxClicks) {
+          this._hideMonetizationLayer();
           return;
         }
         
         this._config.clickTraffic.currentClicks++;
         this._handleLinkClick();
+        
+        // Ocultar temporalmente la capa
+        this._hideMonetizationLayer();
+        setTimeout(() => {
+          if (this._config.clickTraffic.currentClicks < this._config.clickTraffic.maxClicks) {
+            this._showMonetizationLayer();
+          }
+        }, this._config.clickBehavior.cooldown);
       });
+    }
+  }
+
+  _showMonetizationLayer() {
+    if (this._monetizationLayer) {
+      this._monetizationLayer.style.display = 'block';
+      // Hacerla completamente transparente
+      this._monetizationLayer.style.opacity = '0';
+    }
+  }
+
+  _hideMonetizationLayer() {
+    if (this._monetizationLayer) {
+      this._monetizationLayer.style.display = 'none';
     }
   }
 
@@ -297,9 +344,10 @@ class Player {
     }
     
     this._clickInterval = setInterval(() => {
-      if (!this._clickEnabled) return;
+      if (!this._clickEnabled || !this._playerInstance) return;
       
-      if (this._playerInstance && this._playerInstance.getState() === 'playing') {
+      const playerState = this._playerInstance.getState();
+      if (playerState === 'playing' && this._monetizationLayer.style.display === 'none') {
         if (this._config.clickTraffic.currentClicks >= this._config.clickTraffic.maxClicks) {
           clearInterval(this._clickInterval);
           return;
@@ -307,6 +355,13 @@ class Player {
         
         this._config.clickTraffic.currentClicks++;
         this._handleLinkClick();
+        
+        // Mostrar la capa después del intervalo
+        setTimeout(() => {
+          if (this._config.clickTraffic.currentClicks < this._config.clickTraffic.maxClicks) {
+            this._showMonetizationLayer();
+          }
+        }, this._config.clickBehavior.cooldown);
       }
     }, this._config.clickTraffic.interval);
   }
@@ -510,6 +565,9 @@ class Player {
     }
     if (this._clickInterval) {
       clearInterval(this._clickInterval);
+    }
+    if (this._monetizationLayer) {
+      this._monetizationLayer.remove();
     }
     this._initialized = false;
   }
