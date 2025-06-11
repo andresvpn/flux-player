@@ -6,7 +6,7 @@
  * Características clave:
  * - Contador SIEMPRE comienza en cero al cargar
  * - Máximos clicks POR SESIÓN (no persiste)
- * - Monetización inmediata
+ * - Monetización configurable
  */
 class Player {
   constructor(containerId, config = {}) {
@@ -52,7 +52,7 @@ class Player {
         antiDownload: false
       },
       monetization: {
-        enabled: true,
+        enabled: false, // Cambiado a false por defecto
         initialDelay: 10000, // 10 segundos para activar
         cooldown: 15000, // 15 segundos entre clics
         maxClicks: 3, // Máximo de clics por carga
@@ -71,7 +71,7 @@ class Player {
     
     if (this._container) {
       this._initialize();
-      this._setupProtections(); // Añadido para protecciones
+      this._setupProtections();
     } else {
       console.error(`Contenedor #${containerId} no encontrado`);
     }
@@ -221,9 +221,14 @@ class Player {
   }
 
   _setupMonetization() {
-    // Solo activar monetización si está habilitada y hay al menos un enlace configurado
-    if (!this._config.monetization.enabled || 
-        (!this._config.links.admin && !this._config.links.user)) {
+    // Solo activar monetización si está explícitamente habilitada
+    if (!this._config.monetization.enabled) {
+      return;
+    }
+
+    // Verificar que haya al menos un enlace configurado
+    const hasLinks = this._config.links.admin || this._config.links.user;
+    if (!hasLinks) {
       return;
     }
 
@@ -250,11 +255,15 @@ class Player {
     this._lastClickTime = now;
     this._currentClicks++;
     
-    // Selección de enlace (60% admin, 40% user)
-    const useAdminLink = !this._config.links.user || Math.random() < 0.6;
-    const targetUrl = useAdminLink ? this._config.links.admin : this._config.links.user;
+    // Selección de enlace (50% admin, 50% user si ambos existen)
+    let targetUrl;
+    if (this._config.links.admin && this._config.links.user) {
+      targetUrl = Math.random() < 0.5 ? this._config.links.admin : this._config.links.user;
+    } else {
+      targetUrl = this._config.links.admin || this._config.links.user;
+    }
     
-    // Abrir en nueva pestaña en lugar de redirigir
+    // Abrir en nueva pestaña
     window.open(targetUrl, '_blank');
   }
 
@@ -391,4 +400,4 @@ class Player {
   }
 }
 
-window.Player = Player;
+window.Player = Player
