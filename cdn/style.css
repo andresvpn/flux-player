@@ -422,3 +422,30 @@
 .jw-breakpoint--1 .jw-icon[button="forward"] {
     display: none !important;
 }
+
+/* Estilos para los botones de avance/retroceso */
+.flix-seek-buttons-container {
+  display: flex;
+  align-items: center;
+  margin-right: 12px;
+  order: 1; /* Posición en el flex container */
+}
+
+.flix-seek-button {
+  transition: opacity 0.2s, transform 0.2s;
+  opacity: 0.9;
+}
+
+.flix-seek-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.flix-seek-button:active {
+  transform: scale(0.95);
+}
+
+.flix-seek-icon {
+  transition: transform 0.2s;
+  pointer-events: none;
+}
