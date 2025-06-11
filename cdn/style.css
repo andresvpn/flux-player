@@ -422,3 +422,30 @@
 .jw-breakpoint--1 .jw-icon[button="forward"] {
     display: none !important;
 }
+
+/* Centrar completamente el botón de reproducción y el loader */
+.jw-display-icon-container,
+.jw-icon-display,
+.jw-icon-display .jw-svg-icon,
+.jw-icon-display .jw-svg-icon svg,
+.jw-display .jw-display-container {
+    margin: 0 auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+}
+
+/* También centramos el contenedor completo del loader */
+.jw-display {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* Aseguramos que el loader se vea centrado */
+.jw-preview,
+.jw-icon-display {
+    width: 100% !important;
+    text-align: center !important;
+}
