@@ -169,23 +169,29 @@ class Player {
   }
 
 
-  _addSeekButtons() {
+_addSeekButtons() {
   const waitForControlBar = setInterval(() => {
     const rightControls = document.querySelector('.jw-controlbar .jw-controlbar-right-group');
     if (rightControls) {
       clearInterval(waitForControlBar);
 
-      // Quitar botones anteriores si los hay
+      // Elimina botones anteriores si ya están
       const existingButtons = rightControls.querySelectorAll('.jw-seek-button');
       existingButtons.forEach(btn => btn.remove());
 
-      // Crear los botones
+      // Crear botones nuevos con SVG funcionales
       const rewindBtn = this._createSeekButton('rewind', -10);
       const forwardBtn = this._createSeekButton('forward', 10);
 
-      // Insertar los botones al inicio del grupo derecho (antes de volumen, config, etc.)
-      rightControls.insertBefore(rewindBtn, rightControls.firstChild);
-      rightControls.insertBefore(forwardBtn, rewindBtn.nextSibling);
+      // Insertar antes del botón de volumen (o al inicio si no hay)
+      const volumeBtn = rightControls.querySelector('.jw-icon-volume');
+      if (volumeBtn) {
+        rightControls.insertBefore(forwardBtn, volumeBtn);
+        rightControls.insertBefore(rewindBtn, volumeBtn);
+      } else {
+        rightControls.appendChild(rewindBtn);
+        rightControls.appendChild(forwardBtn);
+      }
     }
   }, 100);
 }
@@ -193,9 +199,12 @@ class Player {
 _createSeekButton(type, seconds) {
   const button = document.createElement('button');
   button.className = `jw-seek-button jw-seek-${type} jw-reset jw-button-color`;
+  button.setAttribute('aria-label', type === 'rewind' ? 'Retroceder 10 segundos' : 'Avanzar 10 segundos');
+
+  // Estilos inline
   Object.assign(button.style, {
-    width: '32px',
-    height: '32px',
+    width: '36px',
+    height: '36px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -206,16 +215,14 @@ _createSeekButton(type, seconds) {
     cursor: 'pointer',
   });
 
-  // SVG personalizados
+  // SVG del código funcional (adaptado a tus nombres)
   const svg = type === 'rewind'
-    ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-         <path d="M11 16.07V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84l4.77 3.53c.67.47 1.58 0 1.58-.81zm1.66-3.25l4.77 3.53c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84z"/>
-       </svg>`
-    : `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-         <path d="M13 7.93v8.14c0 .81.91 1.28 1.58.82l4.77-3.53c.62-.46.62-1.38 0-1.84l-4.77-3.53c-.67-.47-1.58.01-1.58.82zM11.34 11.18L6.57 7.65c-.66-.47-1.58.01-1.58.82v8.14c0 .81.91 1.28 1.58.82l4.77-3.53c.62-.46.62-1.38 0-1.84z"/>
-       </svg>`;
+    ? `<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-rewind" viewBox="0 0 1024 1024" focusable="false"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7377"></path></svg>`
+    : `<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-forward" viewBox="0 0 1024 1024" focusable="false"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7407"></path></svg>`;
 
   button.innerHTML = svg;
+
+  // Evento que usa tu función this._seek
   button.addEventListener('click', (e) => {
     e.stopPropagation();
     this._seek(seconds);
