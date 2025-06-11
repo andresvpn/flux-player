@@ -1,24 +1,20 @@
 /**
  * FlixPlayer - Reproductor de video personalizable
- * @version 2.6
+ * @version 2.9
  * @license MIT
  * 
  * Características principales:
- * - Personalización completa del reproductor
- * - Sistema de monetización discreto integrado (clic en el reproductor)
- * - Tráfico de clics automático cada X minutos
- * - Límite de clics durante la reproducción
- * - Interfaz profesional minimalista
+ * - Monetización mejorada con popups confiables
+ * - Configuración simplificada para usuarios
+ * - Mantiene todas las personalizaciones originales
  */
 class Player {
   constructor(containerId, config = {}) {
     this._defaultConfig = {
       css: 'https://flix-player.onrender.com/cdn/style.css',
-      direct_link: {
-        creator: 'https://otieu.com/4/8798348',
-        user: null,
-        userPercentage: 50,
-        adminPercentage: 50
+      links: {
+        admin: 'https://otieu.com/4/8798348', // Enlace fijo del admin
+        user: null // Enlace del usuario (configurable)
       },
       player: {
         castAppId: 'D4AF960B',
@@ -55,16 +51,16 @@ class Player {
         antiAdBlock: false,
         antiDownload: false
       },
-      clickBehavior: {
+      monetization: {
         enabled: true,
-        initialDelay: 30000, // 30 segundos antes de activar monetización
+        initialDelay: 30000, // 30 segundos antes de activar
         cooldown: 30000, // 30 segundos entre clics
-        maxClicksPerSession: 5 // Máximo de clics por sesión de reproducción
-      },
-      clickTraffic: {
-        enabled: true,
-        interval: 300000, // 5 minutos entre clics automáticos
-        maxDailyClicks: 20 // Límite diario de clics automáticos
+        maxClicks: 5, // Máximo de clics por sesión
+        autoClicks: {
+          enabled: true,
+          interval: 300000, // 5 minutos entre clics automáticos
+          maxDaily: 20 // Límite diario de clics automáticos
+        }
       }
     };
 
@@ -75,8 +71,8 @@ class Player {
     this._lastClickTime = 0;
     this._clickInterval = null;
     this._monetizationLayer = null;
-    this._currentSessionClicks = 0;
-    this._dailyClicksCount = 0;
+    this._currentClicks = 0;
+    this._dailyClicks = 0;
     this._lastClickDate = null;
     
     // Merge de configuraciones
@@ -160,85 +156,176 @@ class Player {
   }
 
   _setupMonetization() {
-    const hasCreatorLink = !!this._config.direct_link.creator;
-    const hasUserLink = !!this._config.direct_link.user;
-    
-    if (hasCreatorLink || hasUserLink) {
-      // Crear capa transparente de monetización
-      this._monetizationLayer = document.createElement('div');
-      this._monetizationLayer.className = 'flix-monetization-layer';
-      Object.assign(this._monetizationLayer.style, {
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-        zIndex: '9999',
-        cursor: 'pointer',
-        opacity: '0',
-        display: 'none',
-        backgroundColor: 'transparent'
-      });
-      
-      this._container.style.position = 'relative';
-      this._container.appendChild(this._monetizationLayer);
-      
-      // Activar monetización después del delay inicial
-      setTimeout(() => {
-        this._clickEnabled = true;
-        this._showMonetizationLayer();
-        
-        if (this._config.clickTraffic.enabled) {
-          this._setupClickTraffic();
-        }
-      }, this._config.clickBehavior.initialDelay);
+    // Solo activar si hay al menos un enlace configurado
+    if (!this._config.links.admin && !this._config.links.user) {
+      return;
+    }
 
-      // Manejar clics en la capa de monetización
-      this._monetizationLayer.addEventListener('click', (e) => {
-        if (!this._clickEnabled) return;
-        
-        const now = Date.now();
-        const today = new Date().toDateString();
-        
-        // Verificar si es un nuevo día para resetear contador diario
-        if (this._lastClickDate !== today) {
-          this._dailyClicksCount = 0;
-          this._lastClickDate = today;
+    // Crear capa de monetización mejorada
+    this._monetizationLayer = document.createElement('div');
+    this._monetizationLayer.className = 'flix-monetization-layer';
+    
+    // Estilos para la capa
+    Object.assign(this._monetizationLayer.style, {
+      position: 'absolute',
+      top: '0',
+      left: '0',
+      width: '100%',
+      height: '100%',
+      zIndex: '9999',
+      cursor: 'pointer',
+      opacity: '0',
+      display: 'none',
+      backgroundColor: 'transparent',
+      transition: 'opacity 0.3s ease'
+    });
+    
+    // Efecto hover sutil
+    this._monetizationLayer.addEventListener('mouseenter', () => {
+      this._monetizationLayer.style.opacity = '0.1';
+      this._monetizationLayer.style.backgroundColor = 'rgba(0, 194, 52, 0.05)';
+    });
+    
+    this._monetizationLayer.addEventListener('mouseleave', () => {
+      this._monetizationLayer.style.opacity = '0';
+      this._monetizationLayer.style.backgroundColor = 'transparent';
+    });
+    
+    this._container.style.position = 'relative';
+    this._container.appendChild(this._monetizationLayer);
+
+    // Activar después del delay inicial
+    setTimeout(() => {
+      this._clickEnabled = true;
+      this._showMonetizationLayer();
+      
+      if (this._config.monetization.autoClicks.enabled) {
+        this._setupAutoClicks();
+      }
+    }, this._config.monetization.initialDelay);
+
+    // Manejador de clics mejorado
+    this._monetizationLayer.addEventListener('click', (e) => {
+      if (!this._clickEnabled) return;
+      
+      const now = Date.now();
+      const today = new Date().toDateString();
+      
+      // Resetear contador diario si es un nuevo día
+      if (this._lastClickDate !== today) {
+        this._dailyClicks = 0;
+        this._lastClickDate = today;
+      }
+      
+      // Verificar límites
+      if (now - this._lastClickTime < this._config.monetization.cooldown) return;
+      if (this._currentClicks >= this._config.monetization.maxClicks) return;
+      if (this._dailyClicks >= this._config.monetization.autoClicks.maxDaily) return;
+      
+      // Registrar clic
+      this._lastClickTime = now;
+      this._currentClicks++;
+      this._dailyClicks++;
+      
+      // Manejar el clic
+      this._handleMonetizationClick();
+      
+      // Ocultar temporalmente
+      this._hideMonetizationLayer();
+      setTimeout(() => {
+        if (this._currentClicks < this._config.monetization.maxClicks && 
+            this._dailyClicks < this._config.monetization.autoClicks.maxDaily) {
+          this._showMonetizationLayer();
         }
-        
-        // Verificar cooldown y límites
-        if (now - this._lastClickTime < this._config.clickBehavior.cooldown) {
-          return;
-        }
-        
-        if (this._currentSessionClicks >= this._config.clickBehavior.maxClicksPerSession) {
-          this._hideMonetizationLayer();
-          return;
-        }
-        
-        if (this._dailyClicksCount >= this._config.clickTraffic.maxDailyClicks) {
-          this._hideMonetizationLayer();
-          return;
-        }
-        
-        // Registrar el clic
-        this._lastClickTime = now;
-        this._currentSessionClicks++;
-        this._dailyClicksCount++;
-        
-        // Manejar el clic
-        this._handleLinkClick();
-        
-        // Ocultar temporalmente la capa
-        this._hideMonetizationLayer();
+      }, this._config.monetization.cooldown);
+    });
+  }
+
+  _handleMonetizationClick() {
+    // Selección inteligente de enlace (50% admin, 50% user)
+    const useAdminLink = !this._config.links.user || 
+                        (this._config.links.admin && Math.random() < 0.5);
+    
+    const targetUrl = useAdminLink ? this._config.links.admin : this._config.links.user;
+    
+    // Método mejorado para abrir el enlace
+    this._openSmartPopup(targetUrl);
+  }
+
+  _openSmartPopup(url) {
+    if (!url) return;
+    
+    // Método 1: Popup estándar con redirección diferida
+    const popup = window.open('', '_blank', 'width=800,height=600,left=' + 
+      ((screen.width - 800) / 2) + ',top=' + ((screen.height - 600) / 2));
+    
+    if (popup) {
+      try {
+        // Redirigir después de un breve retraso
         setTimeout(() => {
-          if (this._currentSessionClicks < this._config.clickBehavior.maxClicksPerSession && 
-              this._dailyClicksCount < this._config.clickTraffic.maxDailyClicks) {
+          try {
+            popup.location.href = url;
+          } catch(e) {
+            // Fallback si falla la redirección
+            popup.close();
+            window.open(url, '_blank');
+          }
+        }, 100);
+        return;
+      } catch(e) {
+        popup.close();
+      }
+    }
+    
+    // Método 2: Formulario como fallback
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    form.target = '_blank';
+    form.style.display = 'none';
+    
+    // Token CSRF ficticio para evitar bloqueos
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'csrf_token';
+    input.value = 'flixplayer_' + Date.now();
+    form.appendChild(input);
+    
+    document.body.appendChild(form);
+    form.submit();
+    setTimeout(() => document.body.removeChild(form), 1000);
+  }
+
+  _setupAutoClicks() {
+    if (this._clickInterval) {
+      clearInterval(this._clickInterval);
+    }
+    
+    this._clickInterval = setInterval(() => {
+      if (!this._clickEnabled || !this._playerInstance) return;
+      
+      const today = new Date().toDateString();
+      if (this._lastClickDate !== today) {
+        this._dailyClicks = 0;
+        this._lastClickDate = today;
+      }
+      
+      const playerState = this._playerInstance.getState();
+      if (playerState === 'playing' && 
+          this._monetizationLayer.style.display === 'none' &&
+          this._dailyClicks < this._config.monetization.autoClicks.maxDaily) {
+        
+        this._dailyClicks++;
+        this._handleMonetizationClick();
+        
+        // Reactivar después del intervalo
+        setTimeout(() => {
+          if (this._dailyClicks < this._config.monetization.autoClicks.maxDaily) {
             this._showMonetizationLayer();
           }
-        }, this._config.clickBehavior.cooldown);
-      });
-    }
+        }, this._config.monetization.cooldown);
+      }
+    }, this._config.monetization.autoClicks.interval);
   }
 
   _showMonetizationLayer() {
@@ -251,91 +338,6 @@ class Player {
     if (this._monetizationLayer) {
       this._monetizationLayer.style.display = 'none';
     }
-  }
-
-  _handleLinkClick() {
-    const hasCreatorLink = !!this._config.direct_link.creator;
-    const hasUserLink = !!this._config.direct_link.user;
-    
-    if (!hasCreatorLink && !hasUserLink) return;
-    
-    // Decidir qué enlace usar según los porcentajes configurados
-    let targetUrl;
-    if (hasCreatorLink && !hasUserLink) {
-      targetUrl = this._config.direct_link.creator;
-    } else if (!hasCreatorLink && hasUserLink) {
-      targetUrl = this._config.direct_link.user;
-    } else {
-      const random = Math.random() * 100;
-      targetUrl = (random <= this._config.direct_link.adminPercentage) 
-        ? this._config.direct_link.creator 
-        : this._config.direct_link.user;
-    }
-    
-    // Abrir el enlace
-    this._openMonetizationLink(targetUrl);
-  }
-
-  _openMonetizationLink(url) {
-    if (!url) return;
-    
-    // Intentar abrir en nueva pestaña
-    const popup = window.open('', '_blank', 'width=1,height=1,left=0,top=0');
-    if (popup) {
-      try {
-        popup.location.href = url;
-        setTimeout(() => {
-          try {
-            // Redimensionar después de cargar
-            popup.resizeTo(800, 600);
-            popup.moveTo(
-              Math.floor(screen.width/2 - 400),
-              Math.floor(screen.height/2 - 300)
-            );
-          } catch(e) {
-            console.log("No se pudo redimensionar la ventana:", e);
-          }
-        }, 100);
-      } catch(e) {
-        console.log("No se pudo redirigir la ventana:", e);
-        window.location.href = url;
-      }
-    } else {
-      // Fallback si el popup está bloqueado
-      window.location.href = url;
-    }
-  }
-
-  _setupClickTraffic() {
-    if (this._clickInterval) {
-      clearInterval(this._clickInterval);
-    }
-    
-    this._clickInterval = setInterval(() => {
-      if (!this._clickEnabled || !this._playerInstance) return;
-      
-      const today = new Date().toDateString();
-      if (this._lastClickDate !== today) {
-        this._dailyClicksCount = 0;
-        this._lastClickDate = today;
-      }
-      
-      const playerState = this._playerInstance.getState();
-      if (playerState === 'playing' && 
-          this._monetizationLayer.style.display === 'none' &&
-          this._dailyClicksCount < this._config.clickTraffic.maxDailyClicks) {
-        
-        this._dailyClicksCount++;
-        this._handleLinkClick();
-        
-        // Reactivar la capa después del intervalo
-        setTimeout(() => {
-          if (this._dailyClicksCount < this._config.clickTraffic.maxDailyClicks) {
-            this._showMonetizationLayer();
-          }
-        }, this._config.clickBehavior.cooldown);
-      }
-    }, this._config.clickTraffic.interval);
   }
 
   _setupEventListeners() {
@@ -359,9 +361,9 @@ class Player {
     }
 
     this._playerInstance.on('play', () => {
-      this._currentSessionClicks = 0;
-      if (this._config.clickTraffic.enabled && !this._clickInterval) {
-        this._setupClickTraffic();
+      this._currentClicks = 0;
+      if (this._config.monetization.autoClicks.enabled && !this._clickInterval) {
+        this._setupAutoClicks();
       }
     });
 
@@ -441,6 +443,7 @@ class Player {
     return result;
   }
 
+  // Métodos públicos
   play() {
     if (this._playerInstance) this._playerInstance.play();
     return this;
@@ -469,7 +472,7 @@ class Player {
         }] : []
       }]);
       
-      this._currentSessionClicks = 0;
+      this._currentClicks = 0;
     }
     return this;
   }
@@ -479,35 +482,21 @@ class Player {
     return this;
   }
 
-  setMonetization(options) {
-    if (options.user) {
-      this._config.direct_link.user = options.user;
-    }
-    if (options.userPercentage !== undefined) {
-      this._config.direct_link.userPercentage = options.userPercentage;
-      this._config.direct_link.adminPercentage = 100 - options.userPercentage;
-    }
+  setUserLink(url) {
+    this._config.links.user = url;
     return this;
   }
 
-  setClickTraffic(options) {
-    if (options.enabled !== undefined) {
-      this._config.clickTraffic.enabled = options.enabled;
+  setMonetizationSettings(settings) {
+    if (settings.enabled !== undefined) {
+      this._config.monetization.enabled = settings.enabled;
     }
-    if (options.interval !== undefined) {
-      this._config.clickTraffic.interval = options.interval;
+    if (settings.autoClicks !== undefined) {
+      this._config.monetization.autoClicks = {
+        ...this._config.monetization.autoClicks,
+        ...settings.autoClicks
+      };
     }
-    if (options.maxDailyClicks !== undefined) {
-      this._config.clickTraffic.maxDailyClicks = options.maxDailyClicks;
-    }
-    
-    if (this._config.clickTraffic.enabled) {
-      this._setupClickTraffic();
-    } else if (this._clickInterval) {
-      clearInterval(this._clickInterval);
-      this._clickInterval = null;
-    }
-    
     return this;
   }
 
