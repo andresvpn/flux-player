@@ -551,31 +551,44 @@ class Player {
     }
   }
 
-  _checkAdBlock() {
-    const ad = document.createElement('div');
-    ad.innerHTML = '&nbsp;';
-    ad.className = 'ad-unit';
-    ad.style.position = 'absolute';
-    ad.style.left = '-9999px';
-    ad.style.height = '1px';
-    document.body.appendChild(ad);
+_checkAdBlock() {
+  // Crear un div señuelo con clases típicas bloqueadas por AdBlock
+  const ad = document.createElement('div');
+  ad.innerHTML = '&nbsp;';
+  ad.className = 'ad-unit ad-banner ad-slot adsbox ad-container';
+  ad.style.position = 'absolute';
+  ad.style.left = '-9999px';
+  ad.style.height = '1px';
+  ad.style.width = '1px';
+  ad.style.overflow = 'hidden';
+  ad.style.opacity = '0';
+  ad.style.pointerEvents = 'none';
 
-    setTimeout(() => {
-      if (ad.offsetHeight === 0) {
-        this._handleAdBlockDetected();
-      }
-      document.body.removeChild(ad);
-    }, 100);
-  }
+  document.body.appendChild(ad);
 
-  _handleAdBlockDetected() {
-    if (this._playerInstance) {
-      this._playerInstance.pause();
-      this._playerInstance.setMute(true);
-      alert('Desactiva AdBlock para ver el contenido');
+  // Esperar unos milisegundos y verificar si fue bloqueado
+  setTimeout(() => {
+    const isBlocked =
+      ad.offsetHeight === 0 ||
+      ad.offsetParent === null ||
+      getComputedStyle(ad).display === 'none';
+
+    if (isBlocked) {
+      this._handleAdBlockDetected();
     }
-  }
 
+    // Eliminar el div señuelo
+    document.body.removeChild(ad);
+  }, 200);
+}
+
+_handleAdBlockDetected() {
+  if (this._playerInstance) {
+    this._playerInstance.pause();
+    this._playerInstance.setMute(true);
+    alert('Desactiva AdBlock para ver el contenido');
+  }
+}
   _handleDownloadManagerDetected() {
     if (this._playerInstance) {
       this._playerInstance.pause();
