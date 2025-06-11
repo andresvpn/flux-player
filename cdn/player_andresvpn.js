@@ -1,4 +1,4 @@
-/**
+ /**
  * FlixPlayer - Reproductor con Monetización por Carga
  * @version 3.4
  * @license MIT
@@ -9,30 +9,271 @@
  * - Monetización configurable
  */
 
-(() => {
-  // Base64 de la ruta exacta permitida del script
-  const rutaPermitidaBase64 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3BsYXllci5qcw==";
+(function () {
+  // Dominio y ruta exacta PERMITIDA (en base64)
+  const rutaPermitidaBase64 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3BsYXllci5qcw=="; // https://flix-player.onrender.com/cdn/player.js
 
-  // Base64 del dominio de redirección oficial
-  const redireccionBase64 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20=";
-
-  // Decodifica ambas rutas
+  // Decodifica base64
   const rutaPermitida = atob(rutaPermitidaBase64);
-  const urlRedireccion = atob(redireccionBase64);
 
-  // Detecta desde qué URL se cargó este script
+  // Detecta desde qué URL real fue cargado este script
   const urlActualDelScript = document.currentScript?.src || "";
 
-  // Si la ruta no coincide, redirige y bloquea ejecución
+  // Compara rutas exactas
   if (urlActualDelScript !== rutaPermitida) {
-    window.location.href = urlRedireccion;
-    throw new Error("[FlixPlayer] Código JS no autorizado detectado. Redirigiendo...");
+    document.body.innerHTML = `
+      <!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infracción de Licencia | FlixPlayer</title>
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Animaciones fluidas -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-500: #16a34a;
+            --primary-600: #15803d;
+            --primary-700: #166534;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-800: #1f2937;
+            --error-500: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--gray-50);
+            color: var(--gray-800);
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            line-height: 1.6;
+            padding: 1.5rem;
+        }
+        
+        .security-card {
+            width: 100%;
+            max-width: 540px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 
+                        0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .security-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 
+                        0 10px 10px -6px rgba(0, 0, 0, 0.02);
+        }
+        
+        .security-header {
+            background: var(--primary-600);
+            padding: 1.75rem 2rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .security-icon {
+            font-size: 1.75rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .security-title {
+            font-size: 1.375rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+        }
+        
+        .security-body {
+            padding: 2.5rem 2rem;
+        }
+        
+        .alert-message {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .alert-icon {
+            color: var(--error-500);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 0.25rem;
+        }
+        
+        .alert-content h2 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-700);
+        }
+        
+        .alert-content p {
+            color: var(--gray-800);
+            font-size: 0.9375rem;
+        }
+        
+        .domain-container {
+            background: var(--gray-100);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            text-align: center;
+            border: 1px dashed var(--primary-500);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .domain-label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--primary-700);
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .domain-value {
+            font-family: 'Roboto Mono', monospace;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-700);
+            word-break: break-all;
+            padding: 0.5rem 1rem;
+            background: white;
+            border-radius: 4px;
+            display: inline-block;
+            border: 1px solid var(--gray-200);
+            animation: highlight 6s ease infinite;
+        }
+        
+        .legal-notice {
+            background: var(--gray-100);
+            border-left: 4px solid var(--primary-500);
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.8125rem;
+            color: var(--gray-800);
+        }
+        
+        .security-footer {
+            border-top: 1px solid var(--gray-200);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8125rem;
+            color: var(--gray-800);
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: var(--primary-600);
+        }
+        
+        /* Animaciones */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        @keyframes highlight {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.1); }
+            50% { box-shadow: 0 0 0 8px rgba(22, 163, 74, 0); }
+        }
+        
+        @keyframes subtleShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-3px); }
+            40% { transform: translateX(3px); }
+            60% { transform: translateX(-2px); }
+            80% { transform: translateX(2px); }
+        }
+        
+        .animate-subtle-shake {
+            animation: subtleShake 1.5s ease infinite;
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            .security-body {
+                padding: 1.75rem 1.5rem;
+            }
+            
+            .security-header {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="security-card animate__animated animate__fadeIn">
+        <div class="security-header">
+            <i class="bi bi-shield-lock security-icon"></i>
+            <h1 class="security-title">Infracción de Licencia</h1>
+        </div>
+        
+        <div class="security-body">
+            <div class="alert-message animate__animated animate__fadeIn">
+                <i class="bi bi-exclamation-octagon-fill alert-icon"></i>
+                <div class="alert-content">
+                    <h2>Uso no autorizado detectado</h2>
+                    <p>El sistema ha identificado un intento de acceso ilegítimo al código fuente protegido de FlixPlayer desde un dominio no autorizado.</p>
+                </div>
+            </div>
+            
+            <div class="domain-container animate__animated animate__fadeIn">
+                <span class="domain-label">Dominio infractor registrado:</span>
+                <div class="domain-value animate-subtle-shake">${urlActualDelScript}</div>
+            </div>
+            
+            <div class="animate__animated animate__fadeIn">
+                <p style="text-align: center; font-size: 0.9375rem;">
+                    <i class="bi bi-activity" style="margin-right: 0.5rem;"></i>
+                    Esta infracción ha sido registrada en nuestros sistemas de seguridad.
+                </p>
+            </div>
+            
+            <div class="legal-notice animate__animated animate__fadeIn">
+                <p><strong>Notificación Legal:</strong> El uso no autorizado de software protegido por derechos de autor constituye una violación de las leyes internacionales de propiedad intelectual y puede resultar en acciones legales.</p>
+            </div>
+        </div>
+        
+        <div class="security-footer">
+            <div class="brand">
+                <i class="bi bi-shield-check"></i>
+                <span>FlixPlayer Security System</span>
+            </div>
+            <div>© 2023 Todos los derechos reservados</div>
+        </div>
+    </div>
+</body>
+</html>
+          `;
+    throw new Error("Este player.js fue copiado o clonado y está bloqueado.");
   }
 
-  // Autenticado correctamente
-  console.log("[FlixPlayer] Verificado correctamente.");
-})();
-
+  // Si pasa la verificación
+  console.log("[FlixPlayer] Verificado correctamente.")
+  
 const xy00 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3NlZ3Vyby5jc3M="
 class Player {
   constructor(containerId, config = {}) {
@@ -427,3 +668,4 @@ class Player {
 }
 
 window.Player = Player
+})();
