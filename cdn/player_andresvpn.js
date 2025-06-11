@@ -288,7 +288,7 @@
   }
 
    
-  console.info(`[FlixPlayer] Dominio autorizado: ${dominioActual}`
+  console.info(`[FlixPlayer] Dominio autorizado: ${dominioActual}`)
 
 const xy00 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3NlZ3Vyby5jc3M="
 class Player {
