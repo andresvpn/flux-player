@@ -250,16 +250,11 @@
             image: "https://media.themoviedb.org/t/p/w500_and_h282_face/xtdybjRRZ15mCrPOvEld305myys.jpg",
             file: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     },
-        links: {
-            user: "https://otieu.com/4/8798348"
-        },
-monetization: {
-                enabled: true,
-                initialDelay: 10000, // 10 segundos antes de activar
-                cooldown: 20000, // 20 segundos entre clics
-                maxClicks: 200, // Máximo 3 clics por sesión
-                redirectMode: true // Activar redirección directa
-            }
+        monetization: {
+        enabled: true,
+        user: "https://otieu.com/4/8798348",
+        redirectMode: false // Anuncios se abren en nueva pestaña
+    }
         
     })
 
