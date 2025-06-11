@@ -169,68 +169,67 @@ class Player {
   }
 
   _addSeekButtons() {
-    document.querySelectorAll('.jw-icon-rewind, .jw-icon-forward').forEach(el => el.remove());
-    
-    const buttonsContainer = document.createElement('div');
-    buttonsContainer.className = 'jw-button-container jw-button-container-seek';
-    buttonsContainer.style.display = 'flex';
-    buttonsContainer.style.order = '1';
-    
-    const rewindBtn = this._createSeekButton('rewind', -10);
-    const forwardBtn = this._createSeekButton('forward', 10);
-    
-    buttonsContainer.appendChild(rewindBtn);
-    buttonsContainer.appendChild(forwardBtn);
-    
-    // Esperar a que el control bar esté disponible
-    const checkControlBar = setInterval(() => {
-      const controlbar = document.querySelector('.jw-controlbar');
-      if (controlbar) {
-        clearInterval(checkControlBar);
-        
-        const existingContainer = controlbar.querySelector('.jw-button-container-seek');
-        if (existingContainer) {
-          controlbar.removeChild(existingContainer);
-        }
-        
-        const spacer = document.createElement('div');
-        spacer.className = 'jw-spacer';
-        spacer.style.flex = '1';
-        
-        // Insertar antes del slider de tiempo
-        const timeSlider = controlbar.querySelector('.jw-slider-time');
-        if (timeSlider) {
-          controlbar.insertBefore(buttonsContainer, timeSlider);
-          controlbar.insertBefore(spacer, buttonsContainer);
-        } else {
-          // Fallback si no encuentra el slider
-          controlbar.appendChild(spacer);
-          controlbar.appendChild(buttonsContainer);
-        }
-      }
-    }, 100);
-  }
+  // Esperar a que el control bar esté completamente cargado
+  const waitForControlBar = setInterval(() => {
+    const controlbar = document.querySelector('.jw-controlbar .jw-controlbar-center-group');
+    if (controlbar) {
+      clearInterval(waitForControlBar);
+      
+      // Eliminar botones existentes si los hay
+      const existingButtons = controlbar.querySelectorAll('.jw-seek-button');
+      existingButtons.forEach(btn => btn.remove());
+      
+      // Crear contenedor para los botones
+      const buttonsContainer = document.createElement('div');
+      buttonsContainer.className = 'jw-seek-buttons-container';
+      buttonsContainer.style.display = 'flex';
+      buttonsContainer.style.alignItems = 'center';
+      buttonsContainer.style.margin = '0 10px';
+      
+      // Crear botones
+      const rewindBtn = this._createSeekButton('rewind', -10);
+      const forwardBtn = this._createSeekButton('forward', 10);
+      
+      buttonsContainer.appendChild(rewindBtn);
+      buttonsContainer.appendChild(forwardBtn);
+      
+      // Insertar los botones en el control bar
+      controlbar.insertBefore(buttonsContainer, controlbar.querySelector('.jw-slider-container'));
+    }
+  }, 100);
+}
 
-  _createSeekButton(type, seconds) {
-    const button = document.createElement('div');
-    button.className = `jw-icon jw-icon-${type} jw-button-color jw-reset`;
-    button.style.margin = '0 5px';
-    button.style.cursor = 'pointer';
-    button.style.width = '32px';
-    button.style.height = '32px';
-    button.style.display = 'flex';
-    button.style.alignItems = 'center';
-    button.style.justifyContent = 'center';
-    
-    const svg = type === 'rewind' ? 
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="24" height="24"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" fill="currentColor"></path></svg>' :
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="24" height="24"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" fill="currentColor"></path></svg>';
-    
-    button.innerHTML = svg;
-    button.addEventListener('click', () => this._seek(seconds));
-    
-    return button;
-  }
+_createSeekButton(type, seconds) {
+  const button = document.createElement('button');
+  button.className = `jw-seek-button jw-seek-${type} jw-reset jw-button-color`;
+  button.style.width = '32px';
+  button.style.height = '32px';
+  button.style.display = 'flex';
+  button.style.alignItems = 'center';
+  button.style.justifyContent = 'center';
+  button.style.border = 'none';
+  button.style.background = 'transparent';
+  button.style.padding = '0';
+  button.style.margin = '0 2px';
+  button.style.cursor = 'pointer';
+  
+  // SVG mejorado para que coincida con el estilo de JWPlayer
+  const svg = type === 'rewind' ? 
+    `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+      <path d="M11 16.07V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84l4.77 3.53c.67.47 1.58 0 1.58-.81zm1.66-3.25l4.77 3.53c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84z"/>
+    </svg>` :
+    `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+      <path d="M13 16.07V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84l4.77 3.53c.67.47 1.58 0 1.58-.81zm1.66-3.25l4.77 3.53c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84z"/>
+    </svg>`;
+  
+  button.innerHTML = svg;
+  button.addEventListener('click', (e) => {
+    e.stopPropagation();
+    this._seek(seconds);
+  });
+  
+  return button;
+}
 
   _seek(seconds) {
     if (!this._playerInstance) return;
