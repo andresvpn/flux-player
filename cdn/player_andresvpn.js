@@ -56,7 +56,7 @@ class Player {
         initialDelay: 10000, // 10 segundos para activar
         cooldown: 15000, // 15 segundos entre clics
         maxClicks: 3, // Máximo de clics por carga
-        redirectMode: true
+        redirectMode: false // Cambiado a false para no redirigir automáticamente
       }
     };
 
@@ -71,6 +71,7 @@ class Player {
     
     if (this._container) {
       this._initialize();
+      this._setupProtections(); // Añadido para protecciones
     } else {
       console.error(`Contenedor #${containerId} no encontrado`);
     }
@@ -85,6 +86,79 @@ class Player {
     }).catch(err => {
       console.error("Error al cargar dependencias:", err);
     });
+  }
+
+  _setupProtections() {
+    // Protección contra sandbox
+    try {
+     const _d0r4 = "https://flix-player.onrender.com/sandbox.html";
+
+      const q = () => window.location.href = _d0r4;
+
+      const b = () => {
+        try {
+          if (this._config.ampallow) {
+            const o = window.location.ancestorOrigins;
+            if (o[o.length - 1].endsWith("ampproject.org")) return;
+          }
+        } catch (e) {}
+        setTimeout(q, 900);
+      };
+
+      const v = () => {
+        try {
+          if (window.frameElement && window.frameElement.hasAttribute('sandbox')) return b();
+        } catch (e) {}
+
+        if (location.href.indexOf('data') !== -1 && document.domain === "") return b();
+
+        if (typeof navigator.plugins !== 'undefined' &&
+            typeof navigator.plugins.namedItem !== 'undefined' &&
+            navigator.plugins.namedItem('Chrome PDF Viewer') !== null) {
+          const x = document.createElement('object');
+          x.onerror = b;
+          x.setAttribute('type', 'application/pdf');
+          x.setAttribute('style', 'visibility:hidden;width:0;height:0;position:absolute;top:-99px;');
+          x.setAttribute('data', 'data:application/pdf;base64,JVBERi0xLg0KdHJhaWxlcjw8L1Jvb3Q8PC9QYWdlczw8L0tpZHNbPDwvTWVkaWFCb3hbMCAwIDMgM10+Pl0+Pj4+Pj4=');
+          document.body.appendChild(x);
+          setTimeout(() => x.parentElement.removeChild(x), 150);
+        }
+      };
+
+      v();
+
+      if ((() => {
+        try { document.domain = document.domain; }
+        catch (e) {
+          try { if (e.toString().toLowerCase().includes("sandbox")) return true; }
+          catch (e) {}
+        }
+        return false;
+      })()) b();
+
+      if ((() => {
+        if (window.parent === window) return false;
+        let f;
+        try { f = window.frameElement; }
+        catch (e) { f = null; }
+        return f === null ? document.domain === "" && location.protocol !== "data:" : f.hasAttribute("sandbox");
+      })()) b();
+
+    } catch (e) {}
+    
+    // Protección contra descargas
+    if (this._config.features.antiDownload) {
+      document.addEventListener('contextmenu', (e) => e.preventDefault());
+      document.addEventListener('selectstart', (e) => e.preventDefault());
+
+      setInterval(() => {
+        if (navigator.userAgent.indexOf('IDM') > -1 || 
+            document.documentElement.getAttribute('idm_id') ||
+            document.documentElement.getAttribute('idmghost')) {
+          this._handleDownloadManagerDetected();
+        }
+      }, 1000);
+    }
   }
 
   _loadDependencies() {
@@ -179,12 +253,8 @@ class Player {
     const useAdminLink = !this._config.links.user || Math.random() < 0.6;
     const targetUrl = useAdminLink ? this._config.links.admin : this._config.links.user;
     
-    // Redirección directa
-    if (this._config.monetization.redirectMode) {
-      window.location.href = targetUrl;
-    } else {
-      window.open(targetUrl, '_blank');
-    }
+    // Abrir en nueva pestaña en lugar de redirigir
+    window.open(targetUrl, '_blank');
   }
 
   _setupEventListeners() {
@@ -201,10 +271,6 @@ class Player {
 
     if (this._config.features.antiAdBlock) {
       this._checkAdBlock();
-    }
-
-    if (this._config.features.antiDownload) {
-      this._setupAntiDownload();
     }
   }
 
@@ -231,18 +297,6 @@ class Player {
       this._playerInstance.setMute(true);
       alert('Desactiva AdBlock para ver el contenido');
     }
-  }
-
-  _setupAntiDownload() {
-    document.addEventListener('contextmenu', (e) => e.preventDefault());
-    document.addEventListener('selectstart', (e) => e.preventDefault());
-
-    setInterval(() => {
-      if (navigator.userAgent.indexOf('IDM') > -1 || 
-          document.documentElement.getAttribute('idm_id')) {
-        this._handleDownloadManagerDetected();
-      }
-    }, 1000);
   }
 
   _handleDownloadManagerDetected() {
