@@ -10,7 +10,6 @@
  */
 
 (function () {
-(() => {
   // Dominio y ruta exacta PERMITIDA (en base64)
   const rutaPermitidaBase64 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3BsYXllci5qcw=="; // https://flix-player.onrender.com/cdn/player.js
 
