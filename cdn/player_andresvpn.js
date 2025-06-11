@@ -169,32 +169,23 @@ class Player {
   }
 
 
-  
-_addSeekButtons() {
+  _addSeekButtons() {
   const waitForControlBar = setInterval(() => {
-    const controlbar = document.querySelector('.jw-controlbar .jw-controlbar-center-group');
-    const playButton = controlbar?.querySelector('.jw-icon-playback');
-
-    if (controlbar && playButton) {
+    const rightControls = document.querySelector('.jw-controlbar .jw-controlbar-right-group');
+    if (rightControls) {
       clearInterval(waitForControlBar);
 
-      // Quitar botones previos si existen
-      const existingButtons = controlbar.querySelectorAll('.jw-seek-button');
+      // Quitar botones anteriores si los hay
+      const existingButtons = rightControls.querySelectorAll('.jw-seek-button');
       existingButtons.forEach(btn => btn.remove());
 
-      // Crear los botones de adelantar y retroceder
+      // Crear los botones
       const rewindBtn = this._createSeekButton('rewind', -10);
       const forwardBtn = this._createSeekButton('forward', 10);
 
-      // Insertar rewind antes del botón de Play
-      controlbar.insertBefore(rewindBtn, playButton);
-
-      // Insertar forward después del botón de Play
-      if (playButton.nextSibling) {
-        controlbar.insertBefore(forwardBtn, playButton.nextSibling);
-      } else {
-        controlbar.appendChild(forwardBtn);
-      }
+      // Insertar los botones al inicio del grupo derecho (antes de volumen, config, etc.)
+      rightControls.insertBefore(rewindBtn, rightControls.firstChild);
+      rightControls.insertBefore(forwardBtn, rewindBtn.nextSibling);
     }
   }, 100);
 }
@@ -215,7 +206,7 @@ _createSeekButton(type, seconds) {
     cursor: 'pointer',
   });
 
-  // SVGs corregidos y distintos para cada botón
+  // SVG personalizados
   const svg = type === 'rewind'
     ? `<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
          <path d="M11 16.07V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84l4.77 3.53c.67.47 1.58 0 1.58-.81zm1.66-3.25l4.77 3.53c.66.47 1.58-.01 1.58-.82V7.93c0-.81-.91-1.28-1.58-.82l-4.77 3.53c-.62.46-.62 1.38 0 1.84z"/>
@@ -232,6 +223,9 @@ _createSeekButton(type, seconds) {
 
   return button;
 }
+
+
+  
   _seek(seconds) {
     if (!this._playerInstance) return;
     const newPosition = Math.min(
