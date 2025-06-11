@@ -422,21 +422,3 @@
 .jw-breakpoint--1 .jw-icon[button="forward"] {
     display: none !important;
 }
-
-/* Centrar solo el botón de reproducción inicial (pantalla de inicio) */
-.jw-display-icon-container {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    margin: 0 auto !important;
-}
-
-/* Centrar el loader (círculo de carga) */
-.jw-display {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-}
-
-/* No tocar los íconos normales de los controles */
