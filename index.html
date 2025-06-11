@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlixPlayer - Documentación</title>
+    <title>FlixPlayer - Documentación v3.4</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <!-- Highlight.js CSS -->
@@ -110,28 +110,28 @@
             padding: 0 !important;
         }
         .hljs-keyword {
-            color: #f47067 !important; /* Rojo suave para keywords */
+            color: #f47067 !important;
         }
         .hljs-built_in {
-            color: #dcbdfb !important; /* Morado para funciones built-in */
+            color: #dcbdfb !important;
         }
         .hljs-string {
-            color: #96d0ff !important; /* Azul claro para strings */
+            color: #96d0ff !important;
         }
         .hljs-number {
-            color: #6cb6ff !important; /* Azul para números */
+            color: #6cb6ff !important;
         }
         .hljs-attr {
-            color: #6bc46d !important; /* Verde para atributos */
+            color: #6bc46d !important;
         }
         .hljs-comment {
-            color: #768390 !important; /* Gris para comentarios */
+            color: #768390 !important;
         }
         .hljs-title {
-            color: #6cb6ff !important; /* Azul para títulos */
+            color: #6cb6ff !important;
         }
         .hljs-params {
-            color: #adbac7 !important; /* Gris claro para parámetros */
+            color: #adbac7 !important;
         }
     </style>
 </head>
@@ -141,7 +141,7 @@
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="#">
                 <i class="bi bi-play-circle-fill me-2"></i>
-                <span>FlixPlayer</span>
+                <span>FlixPlayer v3.4</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -173,8 +173,8 @@
         <div class="container py-5">
             <div class="row justify-content-center">
                 <div class="col-lg-10 text-center">
-                    <h1 class="display-4 fw-bold mb-4">FlixPlayer <span class="text-success">v2.4</span></h1>
-                    <p class="lead mb-4 text-muted">Reproductor de video HTML5 altamente personalizable con interfaz minimalista y características avanzadas para una experiencia profesional.</p>
+                    <h1 class="display-4 fw-bold mb-4">FlixPlayer <span class="text-success">v3.4</span></h1>
+                    <p class="lead mb-4 text-muted">Reproductor de video con monetización inteligente y protección avanzada</p>
                     <div class="d-flex gap-3 justify-content-center">
                         <a href="#instalacion" class="btn btn-primary btn-lg px-4 py-2 d-flex align-items-center">
                             <i class="bi bi-rocket me-2"></i>Comenzar
@@ -192,62 +192,35 @@
     <section class="py-5">
         <div class="container">
             <div class="text-center mb-5">
-                <h2 class="fw-bold section-title d-inline-block">Características Principales</h2>
-                <p class="lead text-muted">Todo lo que necesitas en un reproductor moderno</p>
+                <h2 class="fw-bold section-title d-inline-block">Nuevas Características</h2>
+                <p class="lead text-muted">Mejoras significativas en la versión 3.4</p>
             </div>
             <div class="row g-4">
                 <div class="col-md-4">
                     <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
                         <div class="feature-icon">
-                            <i class="bi bi-sliders"></i>
+                            <i class="bi bi-cursor"></i>
                         </div>
-                        <h3>Personalizable</h3>
-                        <p class="text-muted">Ajusta el reproductor a tus necesidades con múltiples opciones de configuración de apariencia y comportamiento.</p>
+                        <h3>Monetización por Click</h3>
+                        <p class="text-muted">Anuncios se abren en nueva pestaña solo al hacer clic, sin redirección automática.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
                         <div class="feature-icon">
-                            <i class="bi bi-speedometer2"></i>
+                            <i class="bi bi-shield-check"></i>
                         </div>
-                        <h3>Alto Rendimiento</h3>
-                        <p class="text-muted">Optimizado para cargar rápidamente y reproducir sin problemas incluso en conexiones lentas.</p>
+                        <h3>Protección Mejorada</h3>
+                        <p class="text-muted">Detección avanzada de AdBlock, IDM y entornos sandbox con alertas nativas.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
                         <div class="feature-icon">
-                            <i class="bi bi-phone"></i>
+                            <i class="bi bi-arrow-clockwise"></i>
                         </div>
-                        <h3>Totalmente Responsivo</h3>
-                        <p class="text-muted">Se adapta perfectamente a cualquier dispositivo móvil, tableta o escritorio.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
-                        <div class="feature-icon">
-                            <i class="bi bi-download"></i>
-                        </div>
-                        <h3>Soporte para Descargas</h3>
-                        <p class="text-muted">Permite agregar botones de descarga para que los usuarios puedan guardar tus videos.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
-                        <div class="feature-icon">
-                            <i class="bi bi-shield-lock"></i>
-                        </div>
-                        <h3>Protección de Contenido</h3>
-                        <p class="text-muted">Opciones para detectar AdBlock y prevenir descargas no autorizadas.</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="text-center p-4 h-100 bg-white rounded-3 shadow-sm">
-                        <div class="feature-icon">
-                            <i class="bi bi-bookmark-check"></i>
-                        </div>
-                        <h3>Recordar Progreso</h3>
-                        <p class="text-muted">Guarda la posición de reproducción para que los usuarios continúen donde lo dejaron.</p>
+                        <h3>Contador de Clics</h3>
+                        <p class="text-muted">Límite configurable de clics por sesión con temporizador de cooldown.</p>
                     </div>
                 </div>
             </div>
@@ -289,22 +262,19 @@
                             Inicializa el reproductor
                         </h3>
                         <div class="code-block mt-3">
-                            <pre><code class="language-javascript">&lt;script&gt;
-    // Configuración básica del reproductor
-    const player = new Player('mi-reproductor', {
-        media: {
-            title: "Mi Video",
-            description: "Descripción del video",
-            image: "imagen.jpg",
-            file: "video.mp4"
-        },
-        player: {
-            autostart: false,
-            mute: false,
-            volume: 80
-        }
-    });
-&lt;/script&gt;</code></pre>
+                            <pre><code class="language-javascript">const player = new Player('mi-reproductor', {
+    media: {
+        title: "Mi Video",
+        description: "Descripción del video",
+        image: "imagen.jpg",
+        file: "video.mp4"
+    },
+    monetization: {
+        enabled: true,
+        user: "https://tu-enlace-user.com",
+        redirectMode: false // Anuncios se abren en nueva pestaña
+    }
+});</code></pre>
                         </div>
                     </div>
                 </div>
@@ -315,50 +285,20 @@
     <!-- Configuration -->
     <section id="configuracion" class="py-5">
         <div class="container">
-            <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Opciones de Configuración</h2>
+            <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Configuración de Monetización</h2>
             
             <div class="row">
                 <div class="col-lg-6">
                     <div class="mb-5">
                         <h3 class="d-flex align-items-center text-dark mb-4">
-                            <i class="bi bi-film text-success me-3"></i>
-                            Configuración de Media
+                            <i class="bi bi-coin text-success me-3"></i>
+                            Opciones Básicas
                         </h3>
                         <div class="code-block mt-3">
-                            <pre><code class="language-javascript">media: {
-    title: "Título del video",       // String - Título que se mostrará
-    description: "Descripción",     // String - Descripción del video
-    image: "poster.jpg",            // String - URL de la imagen miniatura
-    file: "video.mp4",              // String - URL del archivo de video
-    downloadUrl: "video.mp4",       // String (opcional) - URL para descarga
-    thumbnails: "thumbnails.vtt"    // String (opcional) - URL de miniaturas
-}</code></pre>
-                        </div>
-                    </div>
-
-                    <div class="mb-5">
-                        <h3 class="d-flex align-items-center text-dark mb-4">
-                            <i class="bi bi-gear text-success me-3"></i>
-                            Configuración del Reproductor
-                        </h3>
-                        <div class="code-block mt-3">
-                            <pre><code class="language-javascript">player: {
-    autostart: false,               // Boolean - Auto-reproducir al cargar
-    mute: false,                    // Boolean - Silenciar al inicio
-    volume: 80,                     // Number (0-100) - Volumen inicial
-    displayDescription: true,       // Boolean - Mostrar descripción
-    aboutText: "Powered by FlixPlayer", // String - Texto personalizado
-    aboutLink: "",                  // String - Enlace para el texto
-    logo: {                         // Object - Configuración de logo
-        file: "logo.png",           // String - URL del logo
-        link: "https://..."         // String - Enlace al hacer clic
-    },
-    captions: {                     // Object - Estilo de subtítulos
-        color: "#FFF",              // String - Color del texto
-        fontSize: 14,               // Number - Tamaño de fuente
-        backgroundOpacity: 0,       // Number (0-1) - Opacidad fondo
-        edgeStyle: "raised"         // String - Estilo del borde
-    }
+                            <pre><code class="language-javascript">monetization: {
+    enabled: true,          // Activar/desactivar monetización
+    user: "https://...",
+    redirectMode: false     // false = abre en nueva pestaña
 }</code></pre>
                         </div>
                     </div>
@@ -367,36 +307,15 @@
                 <div class="col-lg-6">
                     <div class="mb-5">
                         <h3 class="d-flex align-items-center text-dark mb-4">
-                            <i class="bi bi-shield text-success me-3"></i>
-                            Características Avanzadas
+                            <i class="bi bi-stopwatch text-success me-3"></i>
+                            Control de Clics
                         </h3>
                         <div class="code-block mt-3">
-                            <pre><code class="language-javascript">features: {
-    seekButtons: true,              // Boolean - Botones de avance/retroceso
-    progressSaving: true,           // Boolean - Guardar progreso de reproducción
-    antiAdBlock: false,             // Boolean - Detectar AdBlock
-    antiDownload: false             // Boolean - Prevenir descargas
+                            <pre><code class="language-javascript">monetization: {
+    initialDelay: 10000,    // 10 segundos antes de activar clics
+    cooldown: 15000,        // 15 segundos entre clics
+    maxClicks: 3            // Máximo de clics por sesión
 }</code></pre>
-                        </div>
-                    </div>
-
-                    <div class="mb-5">
-                        <h3 class="d-flex align-items-center text-dark mb-4">
-                            <i class="bi bi-cash-coin text-success me-3"></i>
-                            Configuración de Monetización
-                        </h3>
-                        <div class="code-block mt-3">
-                            <pre><code class="language-javascript">// Configuración básica de monetización
-setMonetization({
-    user: "https://tu-enlace.com"   // String - Tu enlace personalizado
-});
-
-// Configuración de tráfico de clics
-setClickTraffic({
-    enabled: true,                  // Boolean - Habilitar/deshabilitar
-    interval: 300000,               // Number - Intervalo en milisegundos
-    maxClicks: 10                   // Number - Máximo de clics permitidos
-});</code></pre>
                         </div>
                     </div>
                 </div>
@@ -404,21 +323,23 @@ setClickTraffic({
         </div>
     </section>
 
-    <!-- Methods -->
-    <section id="metodos" class="py-5 bg-light">
+    <!-- Protection -->
+    <section id="protecciones" class="py-5 bg-light">
         <div class="container">
-            <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Métodos Públicos</h2>
+            <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Sistema de Protección</h2>
             
             <div class="row g-4">
                 <div class="col-md-6">
                     <div class="card method-card h-100">
                         <div class="card-header method-header">
-                            <h5 class="card-title mb-0"><code>play()</code></h5>
+                            <h5 class="card-title mb-0">Anti-AdBlock</h5>
                         </div>
                         <div class="card-body">
-                            <p class="card-text">Inicia la reproducción del video.</p>
+                            <p class="card-text">Detecta extensiones bloqueadoras de anuncios y muestra alertas.</p>
                             <div class="code-block bg-white">
-                                <pre><code class="language-javascript">player.play();</code></pre>
+                                <pre><code class="language-javascript">features: {
+    antiAdBlock: true
+}</code></pre>
                             </div>
                         </div>
                     </div>
@@ -427,75 +348,14 @@ setClickTraffic({
                 <div class="col-md-6">
                     <div class="card method-card h-100">
                         <div class="card-header method-header">
-                            <h5 class="card-title mb-0"><code>pause()</code></h5>
+                            <h5 class="card-title mb-0">Anti-Download</h5>
                         </div>
                         <div class="card-body">
-                            <p class="card-text">Pausa la reproducción del video.</p>
+                            <p class="card-text">Bloquea gestores de descarga como IDM.</p>
                             <div class="code-block bg-white">
-                                <pre><code class="language-javascript">player.pause();</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card method-card h-100">
-                        <div class="card-header method-header">
-                            <h5 class="card-title mb-0"><code>loadMedia(file, image, title, description)</code></h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Carga un nuevo video en el reproductor.</p>
-                            <div class="code-block bg-white">
-                                <pre><code class="language-javascript">player.loadMedia(
-    "nuevo-video.mp4",   // String - URL del video
-    "poster.jpg",        // String - URL de la miniatura
-    "Título",            // String - Título del video
-    "Descripción"        // String - Descripción
-);</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card method-card h-100">
-                        <div class="card-header method-header">
-                            <h5 class="card-title mb-0"><code>setDownloadUrl(url)</code></h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Establece una URL para descargar el video.</p>
-                            <div class="code-block bg-white">
-                                <pre><code class="language-javascript">player.setDownloadUrl("video.mp4");</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card method-card h-100">
-                        <div class="card-header method-header">
-                            <h5 class="card-title mb-0"><code>setMonetization(options)</code></h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Configura las opciones de monetización.</p>
-                            <div class="code-block bg-white">
-                                <pre><code class="language-javascript">player.setMonetization({
-    user: "https://tu-enlace.com"  // String - Enlace personalizado
-});</code></pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card method-card h-100">
-                        <div class="card-header method-header">
-                            <h5 class="card-title mb-0"><code>destroy()</code></h5>
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">Elimina el reproductor y limpia los recursos.</p>
-                            <div class="code-block bg-white">
-                                <pre><code class="language-javascript">player.destroy();</code></pre>
+                                <pre><code class="language-javascript">features: {
+    antiDownload: true
+}</code></pre>
                             </div>
                         </div>
                     </div>
@@ -507,99 +367,37 @@ setClickTraffic({
     <!-- Examples -->
     <section id="ejemplos" class="py-5">
         <div class="container">
-            <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Ejemplos Prácticos</h2>
+            <h2 class="fw-bold text-center mb-5 section-title d-inline-block">Ejemplo Completo</h2>
             
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="example-container">
-                        <h3 class="d-flex align-items-center text-dark mb-4">
-                            <i class="bi bi-play-btn text-success me-3"></i>
-                            Reproductor Básico
-                        </h3>
-                        <div class="code-block mt-3">
-                            <pre><code class="language-javascript">const basicPlayer = new Player('reproductor-basico', {
+            <div class="example-container">
+                <div class="code-block mt-3">
+                    <pre><code class="language-javascript">const player = new Player('reproductor-premium', {
     media: {
-        title: "Video Ejemplo",
-        description: "Esto es un video de ejemplo",
+        title: "Video Exclusivo",
+        description: "Contenido premium protegido",
         image: "poster.jpg",
-        file: "video.mp4"
+        file: "video.mp4",
+        downloadUrl: null // Descargas desactivadas
     },
     player: {
         autostart: false,
         mute: false,
-        volume: 80
-    }
-});</code></pre>
-                        </div>
-                    </div>
-                    
-                    <div class="example-container">
-                        <h3 class="d-flex align-items-center text-dark mb-4">
-                            <i class="bi bi-shield-lock text-success me-3"></i>
-                            Reproductor Protegido
-                        </h3>
-                        <div class="code-block mt-3">
-                            <pre><code class="language-javascript">const protectedPlayer = new Player('reproductor-protegido', {
-    media: {
-        title: "Video Protegido",
-        file: "video.mp4",
-        image: "poster.jpg"
+        aboutText: "Solo para miembros"
     },
     features: {
-        antiAdBlock: true,   // Detectar AdBlock
-        antiDownload: true   // Prevenir descargas
+        antiAdBlock: true,
+        antiDownload: true,
+        progressSaving: true
+    },
+    monetization: {
+        enabled: true,
+        user: "https://afiliado.com",
+        initialDelay: 15000,   // 15 segundos delay
+        cooldown: 20000,      // 20 segundos entre clics
+        maxClicks: 2,         // 2 clics máximo
+        redirectMode: false    // Abre en nueva pestaña
     }
 });</code></pre>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-6">
-                    <div class="example-container">
-                        <h3 class="d-flex align-items-center text-dark mb-4">
-                            <i class="bi bi-download text-success me-3"></i>
-                            Con Botón de Descarga
-                        </h3>
-                        <div class="code-block mt-3">
-                            <pre><code class="language-javascript">const downloadPlayer = new Player('reproductor-descarga', {
-    media: {
-        title: "Video Descargable",
-        file: "video.mp4",
-        image: "poster.jpg",
-        downloadUrl: "video.mp4"  // URL para descarga
-    }
-});
-
-// También puedes agregarlo después:
-downloadPlayer.setDownloadUrl("video.mp4");</code></pre>
-                        </div>
-                    </div>
-                    
-                    <div class="example-container">
-                        <h3 class="d-flex align-items-center text-dark mb-4">
-                            <i class="bi bi-arrow-repeat text-success me-3"></i>
-                            Cambio Dinámico de Video
-                        </h3>
-                        <div class="code-block mt-3">
-                            <pre><code class="language-javascript">const dynamicPlayer = new Player('reproductor-dinamico', {
-    media: {
-        title: "Primer Video",
-        file: "video1.mp4",
-        image: "poster1.jpg"
-    }
-});
-
-// En algún evento (click, etc.)
-document.getElementById('cambiar-video').addEventListener('click', () => {
-    dynamicPlayer.loadMedia(
-        "video2.mp4",
-        "poster2.jpg",
-        "Segundo Video",
-        "Nueva descripción"
-    );
-});</code></pre>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -609,7 +407,7 @@ document.getElementById('cambiar-video').addEventListener('click', () => {
     <footer class="py-4 bg-dark text-white">
         <div class="container text-center">
             <p class="mb-0">
-                <i class="bi bi-c-circle"></i> 2023 FlixPlayer v2.4 - 
+                <i class="bi bi-c-circle"></i> 2023 FlixPlayer v3.4 - 
                 <a href="#" class="text-white text-decoration-none">Documentación</a> | 
                 <a href="#" class="text-white text-decoration-none">Términos</a> | 
                 <a href="#" class="text-white text-decoration-none">Privacidad</a>
