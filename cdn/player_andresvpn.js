@@ -370,7 +370,7 @@ this._handleSeek = (seconds) => {
         }  
 
 })
-      });
+      
     
     this._config = this._deepMerge(this._defaultConfig, config);
     
