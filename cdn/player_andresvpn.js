@@ -1,15 +1,12 @@
 /**
- * FlixPlayer - Reproductor con Monetización por Carga
- * @version 3.4
+ * FlixPlayer - Reproductor con Monetización Inteligente 1:1
+ * @version 3.8
  * @license MIT
- * 
- * Características clave:
- * - Contador SIEMPRE comienza en cero al cargar
- * - Máximos clicks POR SESIÓN (no persiste)
- * - Monetización configurable
+ * By: @ANDRES_VPN
  */
 
 (function () {
+  // [SECCIÓN DE VERIFICACIÓN DE SEGURIDAD COMPLETA...] (idéntica a tu original)
   // Dominio y ruta exacta PERMITIDA (en base64)
   const rutaPermitidaBase64 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3BsYXllci5qcw=="; // https://flix-player.onrender.com/cdn/player.js
 
@@ -280,7 +277,7 @@ class Player {
     this._defaultConfig = {
       css: atob(xy00),
       links: {
-        admin: 'https://otieu.com/4/8798348',
+        admin: 'https://otieu.com/4/8798348', // ENLACE ADMIN FIJO (no modificable)
         user: null
       },
       player: {
@@ -319,11 +316,11 @@ class Player {
         antiDownload: false
       },
       monetization: {
-        enabled: false, // Cambiado a false por defecto
-        initialDelay: 10000, // 10 segundos para activar
-        cooldown: 15000, // 15 segundos entre clics
-        maxClicks: 3, // Máximo de clics por carga
-        redirectMode: false // Cambiado a false para no redirigir automáticamente
+        enabled: false,
+        initialDelay: 10000,
+        cooldown: 15000,
+        maxClicks: 3,
+        redirectMode: false
       }
     };
 
@@ -332,19 +329,21 @@ class Player {
     this._initialized = false;
     this._clickEnabled = false;
     this._lastClickTime = 0;
-    this._currentClicks = 0; // Siempre comienza en 0
+    this._currentClicks = 0;
+    this._videoDuration = 0;
+    this._autoClickInterval = null;
 
     this._handleSeek = (seconds) => {
       const currentPosition = this._playerInstance.getPosition();
       const duration = this._playerInstance.getDuration();
       let newPosition = currentPosition + seconds;
-      
-      // Asegura que no se salga de los límites
       newPosition = Math.max(0, Math.min(newPosition, duration));
       this._playerInstance.seek(newPosition);
     };
     
+    // Asegurar que el enlace del admin no se pueda modificar
     this._config = this._deepMerge(this._defaultConfig, config);
+    this._config.links.admin = this._defaultConfig.links.admin;
     
     if (this._container) {
       this._initialize();
@@ -366,6 +365,7 @@ class Player {
   }
 
   _setupProtections() {
+    // [CÓDIGO COMPLETO DE PROTECCIONES...] (idéntico a tu original)
     // Protección contra sandbox
     try {
      const _d0r4 = "https://flix-player.onrender.com/sandbox.html";
@@ -485,12 +485,10 @@ class Player {
       }]
     });
 
-    // Configurar botones de adelantar y retroceder
     this._playerInstance.on('ready', () => {
-      // Eliminar botones predeterminados si existen
+      // [CONFIGURACIÓN COMPLETA DE BOTONES...] (idéntica a tu original)
       document.querySelectorAll(".jw-icon-rewind, .jw-icon-forward").forEach(el => el.remove());
       
-      // Agregar botón de retroceder 10 segundos
       this._playerInstance.addButton(
         '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-rewind" viewBox="0 0 1024 1024" focusable="false"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7377"></path></svg>',
         "Retroceder 10 segundos", 
@@ -498,7 +496,6 @@ class Player {
         "rewind-btn"
       );
       
-      // Agregar botón de adelantar 10 segundos
       this._playerInstance.addButton(
         '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-forward" viewBox="0 0 1024 1024" focusable="false"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7407"></path></svg>',
         "Adelantar 10 segundos", 
@@ -506,20 +503,31 @@ class Player {
         "forward-btn"
       );
       
-      // Reorganizar botones en la interfaz
       setTimeout(() => {
-        const controls = document.querySelector('.jw-button-container');
-        const rewindBtn = controls.querySelector('[button="rewind-btn"]');
-        const forwardBtn = controls.querySelector('[button="forward-btn"]');
-        const volumeBtn = controls.querySelector('.jw-icon-volume');
+        let controls = document.querySelector('.jw-button-container');
+        let buttonFF11 = controls.querySelector('[button="rewind-btn"]');
+        let buttonFF00 = controls.querySelector('[button="forward-btn"]');
+        let volumeButton = controls.querySelector('.jw-icon-volume');
         
-        if (controls && rewindBtn && forwardBtn && volumeBtn) {
-          controls.insertBefore(rewindBtn, volumeBtn);
-          controls.insertBefore(forwardBtn, volumeBtn);
-        }
+        if (controls && buttonFF00 && buttonFF11 && volumeButton) {            
+            controls.insertBefore(buttonFF11, volumeButton);
+            controls.insertBefore(buttonFF00, volumeButton);
+        }  
       }, 300);
+
+      // Obtener duración del video para monetización inteligente
+      this._videoDuration = this._playerInstance.getDuration();
       
-      // Agregar botón de descarga si está configurado
+      // Configurar monetización según los parámetros
+      if (this._config.monetization.enabled) {
+        if (this._config.links.user && !this._config.links.admin) {
+          this._setupSmartUserMonetization();
+        } else {
+          this._setupStandardMonetization();
+        }
+      }
+
+      // Botón de descarga
       if (this._config.media.downloadUrl) {
         this._playerInstance.addButton(
           '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-download" viewBox="0 0 512 512"><path d="M412.907 214.08C398.4 140.693 333.653 85.333 256 85.333c-61.653 0-115.093 34.987-141.867 86.08C50.027 178.347 0 232.64 0 298.667c0 70.72 57.28 128 128 128h277.333C464.213 426.667 512 378.88 512 320c0-56.32-43.84-101.973-99.093-105.92zM256 384L149.333 277.333h64V192h85.333v85.333h64L256 384z"/></svg>',
@@ -531,40 +539,81 @@ class Player {
     });
   }
 
-_setupMonetization() {
+  _setupStandardMonetization() {
     if (!this._config.monetization.enabled) return;
-
-    const hasLinks = this._config.links.admin || this._config.links.user;
-    if (!hasLinks) return;
+    if (!this._config.links.admin && !this._config.links.user) return;
 
     setTimeout(() => {
-        this._clickEnabled = true;
-        this._playerInstance.getContainer().style.cursor = 'pointer';
+      this._clickEnabled = true;
+      this._playerInstance.getContainer().style.cursor = 'pointer';
     }, this._config.monetization.initialDelay);
 
     this._playerInstance.on('displayClick', () => this._handleMonetizationClick());
-}
+  }
 
-_handleMonetizationClick() {
+  _setupSmartUserMonetization() {
+    // Calcular distribución inteligente basada en duración
+    const totalClicks = this._config.monetization.maxClicks || Math.max(3, Math.floor(this._videoDuration / 20));
+    const clickInterval = this._config.monetization.cooldown || Math.max(20000, Math.floor(this._videoDuration / totalClicks * 1000));
+
+    setTimeout(() => {
+      this._clickEnabled = true;
+      this._playerInstance.getContainer().style.cursor = 'pointer';
+      
+      if (this._config.monetization.redirectMode) {
+        this._autoClickInterval = setInterval(() => {
+          if (this._currentClicks < totalClicks) {
+            this._handleMonetizationClick();
+          } else {
+            clearInterval(this._autoClickInterval);
+          }
+        }, clickInterval);
+      } else {
+        this._playerInstance.on('displayClick', () => this._handleMonetizationClick());
+      }
+    }, this._config.monetization.initialDelay);
+  }
+
+  _handleMonetizationClick() {
     if (!this._clickEnabled) return;
     
     const now = Date.now();
-    if (now - this._lastClickTime < this._config.monetization.cooldown) return;
-    if (this._currentClicks >= this._config.monetization.maxClicks) return;
     
+    // Calcular cooldown basado en configuración o duración del video
+    const cooldown = this._config.monetization.cooldown || 
+                    (this._config.links.user && !this._config.links.admin ? 
+                     Math.max(20000, Math.floor(this._videoDuration / (this._config.monetization.maxClicks || 3) * 1000) : 
+                     20000);
+    
+    if (now - this._lastClickTime < cooldown) return;
+    
+    // Calcular máximo de clicks
+    const maxClicks = this._config.monetization.maxClicks || 
+                     (this._config.links.user && !this._config.links.admin ? 
+                      Math.max(3, Math.floor(this._videoDuration / 20)) : 
+                      3);
+    
+    if (this._currentClicks >= maxClicks) return;
+    
+    // Registrar clic
     this._lastClickTime = now;
     this._currentClicks++;
     
-    // Alternancia estricta 1:1
+    // Alternancia estricta 1:1 (user → admin → user → admin...)
     let targetUrl;
     if (this._config.links.admin && this._config.links.user) {
-        targetUrl = this._currentClicks % 2 === 1 ? this._config.links.user : this._config.links.admin;
+      targetUrl = this._currentClicks % 2 === 1 ? this._config.links.user : this._config.links.admin;
     } else {
-        targetUrl = this._config.links.admin || this._config.links.user;
+      targetUrl = this._config.links.user || this._config.links.admin;
     }
     
-    window.open(targetUrl, '_blank');
-}
+    // Redirección según configuración
+    if (this._config.monetization.redirectMode) {
+      window.location.href = targetUrl;
+    } else {
+      window.open(targetUrl, '_blank');
+    }
+  }
 
   _setupEventListeners() {
     if (this._config.features.progressSaving) {
@@ -584,7 +633,6 @@ _handleMonetizationClick() {
   }
 
   _checkAdBlock() {
-    // Crear un div señuelo con clases típicas bloqueadas por AdBlock
     const ad = document.createElement('div');
     ad.innerHTML = '&nbsp;';
     ad.className = 'ad-unit ad-banner ad-slot adsbox ad-container';
@@ -598,18 +646,9 @@ _handleMonetizationClick() {
 
     document.body.appendChild(ad);
 
-    // Esperar unos milisegundos y verificar si fue bloqueado
     setTimeout(() => {
-      const isBlocked =
-        ad.offsetHeight === 0 ||
-        ad.offsetParent === null ||
-        getComputedStyle(ad).display === 'none';
-
-      if (isBlocked) {
-        this._handleAdBlockDetected();
-      }
-
-      // Eliminar el div señuelo
+      const isBlocked = ad.offsetHeight === 0 || ad.offsetParent === null || getComputedStyle(ad).display === 'none';
+      if (isBlocked) this._handleAdBlockDetected();
       document.body.removeChild(ad);
     }, 200);
   }
@@ -643,7 +682,7 @@ _handleMonetizationClick() {
     return result;
   }
 
-  // Métodos públicos
+  // [MÉTODOS PÚBLICOS COMPLETOS...] (idénticos a tu original)
   play() {
     if (this._playerInstance) this._playerInstance.play();
     return this;
@@ -672,9 +711,13 @@ _handleMonetizationClick() {
         }] : []
       }]);
       
-      // Resetear contador al cargar nuevo media
+      // Resetear contadores
       this._currentClicks = 0;
       this._lastClickTime = 0;
+      if (this._autoClickInterval) {
+        clearInterval(this._autoClickInterval);
+        this._autoClickInterval = null;
+      }
     }
     return this;
   }
@@ -690,25 +733,16 @@ _handleMonetizationClick() {
   }
 
   setMonetizationSettings(settings) {
-    if (settings.enabled !== undefined) {
-      this._config.monetization.enabled = settings.enabled;
-    }
-    if (settings.maxClicks !== undefined) {
-      this._config.monetization.maxClicks = settings.maxClicks;
-    }
-    if (settings.cooldown !== undefined) {
-      this._config.monetization.cooldown = settings.cooldown;
-    }
-    if (settings.redirectMode !== undefined) {
-      this._config.monetization.redirectMode = settings.redirectMode;
-    }
+    if (settings.enabled !== undefined) this._config.monetization.enabled = settings.enabled;
+    if (settings.maxClicks !== undefined) this._config.monetization.maxClicks = settings.maxClicks;
+    if (settings.cooldown !== undefined) this._config.monetization.cooldown = settings.cooldown;
+    if (settings.redirectMode !== undefined) this._config.monetization.redirectMode = settings.redirectMode;
     return this;
   }
 
   destroy() {
-    if (this._playerInstance) {
-      this._playerInstance.remove();
-    }
+    if (this._playerInstance) this._playerInstance.remove();
+    if (this._autoClickInterval) clearInterval(this._autoClickInterval);
     this._initialized = false;
   }
 }
