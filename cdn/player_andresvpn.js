@@ -1,4 +1,4 @@
- /**
+/**
  * FlixPlayer - Reproductor con Monetización por Carga
  * @version 3.4
  * @license MIT
@@ -334,43 +334,15 @@ class Player {
     this._lastClickTime = 0;
     this._currentClicks = 0; // Siempre comienza en 0
 
-this._handleSeek = (seconds) => {
-    const currentPosition = this._playerInstance.getPosition();
-    const duration = this._playerInstance.getDuration();
-    let newPosition = currentPosition + seconds;
-    
-    // Asegura que no se salga de los límites
-    newPosition = Math.max(0, Math.min(newPosition, duration));
-    this._playerInstance.seek(newPosition);
-};
-   
-    this._playerInstance.on('ready', () => {
-    document.querySelectorAll(".jw-icon-rewind, .jw-icon-forward").forEach(el => el.remove()); 
-         this._playerInstance.addButton(
-        '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-forward" viewBox="0 0 1024 1024" focusable="false"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7407"></path></svg>',
-        "Avanzar 10 sec", 
-        function() { this._handleSeek(10); },
-      "ff00"
-      );
-      this._playerInstance.addButton(
-        '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-rewind" viewBox="0 0 1024 1024" focusable="false"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7377"></path></svg>',
-        "Retroceder 10 sec", 
-        function() { this._handleSeek(-10); },
-        "ff11"
-      );
-   
-        let controls = document.querySelector('.jw-button-container');
-        let buttonFF11 = controls.querySelector('[button="ff11"]');
-        let buttonFF00 = controls.querySelector('[button="ff00"]');
-        let volumeButton = controls.querySelector('.jw-icon-volume'); // Botón de volumen
-
-        if (controls && buttonFF00 && buttonFF11 && volumeButton) {            
-            controls.insertBefore(buttonFF11, volumeButton);
-            controls.insertBefore(buttonFF00, volumeButton);
-        }  
-
-})
+    this._handleSeek = (seconds) => {
+      const currentPosition = this._playerInstance.getPosition();
+      const duration = this._playerInstance.getDuration();
+      let newPosition = currentPosition + seconds;
       
+      // Asegura que no se salga de los límites
+      newPosition = Math.max(0, Math.min(newPosition, duration));
+      this._playerInstance.seek(newPosition);
+    };
     
     this._config = this._deepMerge(this._defaultConfig, config);
     
@@ -513,64 +485,86 @@ this._handleSeek = (seconds) => {
       }]
     });
 
-    if (this._config.media.downloadUrl) {
-      this._playerInstance.on('ready', () => {
+    // Configurar botones de adelantar y retroceder
+    this._playerInstance.on('ready', () => {
+      // Eliminar botones predeterminados si existen
+      document.querySelectorAll(".jw-icon-rewind, .jw-icon-forward").forEach(el => el.remove());
+      
+      // Agregar botón de retroceder 10 segundos
+      this._playerInstance.addButton(
+        '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-rewind" viewBox="0 0 1024 1024" focusable="false"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7377"></path></svg>',
+        "Retroceder 10 segundos", 
+        () => this._handleSeek(-10),
+        "rewind-btn"
+      );
+      
+      // Agregar botón de adelantar 10 segundos
+      this._playerInstance.addButton(
+        '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-forward" viewBox="0 0 1024 1024" focusable="false"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7407"></path></svg>',
+        "Adelantar 10 segundos", 
+        () => this._handleSeek(10),
+        "forward-btn"
+      );
+      
+      // Reorganizar botones en la interfaz
+      setTimeout(() => {
+        const controls = document.querySelector('.jw-button-container');
+        const rewindBtn = controls.querySelector('[button="rewind-btn"]');
+        const forwardBtn = controls.querySelector('[button="forward-btn"]');
+        const volumeBtn = controls.querySelector('.jw-icon-volume');
+        
+        if (controls && rewindBtn && forwardBtn && volumeBtn) {
+          controls.insertBefore(rewindBtn, volumeBtn);
+          controls.insertBefore(forwardBtn, volumeBtn);
+        }
+      }, 300);
+      
+      // Agregar botón de descarga si está configurado
+      if (this._config.media.downloadUrl) {
         this._playerInstance.addButton(
           '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-download" viewBox="0 0 512 512"><path d="M412.907 214.08C398.4 140.693 333.653 85.333 256 85.333c-61.653 0-115.093 34.987-141.867 86.08C50.027 178.347 0 232.64 0 298.667c0 70.72 57.28 128 128 128h277.333C464.213 426.667 512 378.88 512 320c0-56.32-43.84-101.973-99.093-105.92zM256 384L149.333 277.333h64V192h85.333v85.333h64L256 384z"/></svg>',
           "Download",
           () => window.location.href = this._config.media.downloadUrl,
           "download-btn"
         );
-      });
-    }
+      }
+    });
   }
 
-  _setupMonetization() {
-    // Solo activar monetización si está explícitamente habilitada
-    if (!this._config.monetization.enabled) {
-      return;
-    }
+_setupMonetization() {
+    if (!this._config.monetization.enabled) return;
 
-    // Verificar que haya al menos un enlace configurado
     const hasLinks = this._config.links.admin || this._config.links.user;
-    if (!hasLinks) {
-      return;
-    }
+    if (!hasLinks) return;
 
-    // Activar después del delay inicial
     setTimeout(() => {
-      this._clickEnabled = true;
-      this._playerInstance.getContainer().style.cursor = 'pointer';
+        this._clickEnabled = true;
+        this._playerInstance.getContainer().style.cursor = 'pointer';
     }, this._config.monetization.initialDelay);
 
-    // Manejador de clics directo en el reproductor
     this._playerInstance.on('displayClick', () => this._handleMonetizationClick());
-  }
+}
 
-  _handleMonetizationClick() {
+_handleMonetizationClick() {
     if (!this._clickEnabled) return;
     
     const now = Date.now();
-    
-    // Verificar cooldown y máximo de clics
     if (now - this._lastClickTime < this._config.monetization.cooldown) return;
     if (this._currentClicks >= this._config.monetization.maxClicks) return;
     
-    // Registrar clic
     this._lastClickTime = now;
     this._currentClicks++;
     
-    // Selección de enlace (50% admin, 50% user si ambos existen)
+    // Alternancia estricta 1:1
     let targetUrl;
     if (this._config.links.admin && this._config.links.user) {
-      targetUrl = Math.random() < 0.5 ? this._config.links.admin : this._config.links.user;
+        targetUrl = this._currentClicks % 2 === 1 ? this._config.links.user : this._config.links.admin;
     } else {
-      targetUrl = this._config.links.admin || this._config.links.user;
+        targetUrl = this._config.links.admin || this._config.links.user;
     }
     
-    // Abrir en nueva pestaña
     window.open(targetUrl, '_blank');
-  }
+}
 
   _setupEventListeners() {
     if (this._config.features.progressSaving) {
@@ -589,44 +583,45 @@ this._handleSeek = (seconds) => {
     }
   }
 
-_checkAdBlock() {
-  // Crear un div señuelo con clases típicas bloqueadas por AdBlock
-  const ad = document.createElement('div');
-  ad.innerHTML = '&nbsp;';
-  ad.className = 'ad-unit ad-banner ad-slot adsbox ad-container';
-  ad.style.position = 'absolute';
-  ad.style.left = '-9999px';
-  ad.style.height = '1px';
-  ad.style.width = '1px';
-  ad.style.overflow = 'hidden';
-  ad.style.opacity = '0';
-  ad.style.pointerEvents = 'none';
+  _checkAdBlock() {
+    // Crear un div señuelo con clases típicas bloqueadas por AdBlock
+    const ad = document.createElement('div');
+    ad.innerHTML = '&nbsp;';
+    ad.className = 'ad-unit ad-banner ad-slot adsbox ad-container';
+    ad.style.position = 'absolute';
+    ad.style.left = '-9999px';
+    ad.style.height = '1px';
+    ad.style.width = '1px';
+    ad.style.overflow = 'hidden';
+    ad.style.opacity = '0';
+    ad.style.pointerEvents = 'none';
 
-  document.body.appendChild(ad);
+    document.body.appendChild(ad);
 
-  // Esperar unos milisegundos y verificar si fue bloqueado
-  setTimeout(() => {
-    const isBlocked =
-      ad.offsetHeight === 0 ||
-      ad.offsetParent === null ||
-      getComputedStyle(ad).display === 'none';
+    // Esperar unos milisegundos y verificar si fue bloqueado
+    setTimeout(() => {
+      const isBlocked =
+        ad.offsetHeight === 0 ||
+        ad.offsetParent === null ||
+        getComputedStyle(ad).display === 'none';
 
-    if (isBlocked) {
-      this._handleAdBlockDetected();
-    }
+      if (isBlocked) {
+        this._handleAdBlockDetected();
+      }
 
-    // Eliminar el div señuelo
-    document.body.removeChild(ad);
-  }, 200);
-}
-
-_handleAdBlockDetected() {
-  if (this._playerInstance) {
-    this._playerInstance.pause();
-    this._playerInstance.setMute(true);
-    alert('Desactiva AdBlock para ver el contenido');
+      // Eliminar el div señuelo
+      document.body.removeChild(ad);
+    }, 200);
   }
-}
+
+  _handleAdBlockDetected() {
+    if (this._playerInstance) {
+      this._playerInstance.pause();
+      this._playerInstance.setMute(true);
+      alert('Desactiva AdBlock para ver el contenido');
+    }
+  }
+
   _handleDownloadManagerDetected() {
     if (this._playerInstance) {
       this._playerInstance.pause();
@@ -718,5 +713,5 @@ _handleAdBlockDetected() {
   }
 }
 
-window.Player = Player
+window.Player = Player;
 })();
