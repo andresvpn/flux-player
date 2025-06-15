@@ -1,23 +1,16 @@
 /**
  * FlixPlayer - Reproductor con Monetización Inteligente 1:1
- * @version 3.8
+ * @version 3.8.2
  * @license MIT
  **/
 
 (function () {
-  // Dominio y ruta exacta PERMITIDA (en base64)
   const rutaPermitidaBase64 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3BsYXllci5qcw=="; 
-
-  // Decodifica base64
   const rutaPermitida = atob(rutaPermitidaBase64);
-
-  // Detecta desde qué URL real fue cargado este script
   const urlActualDelScript = document.currentScript?.src || "";
 
-  // Compara rutas exactas
   if (urlActualDelScript !== rutaPermitida) {
-    document.body.innerHTML = `
-      <!DOCTYPE html>
+    document.body.innerHTML = ` <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -261,14 +254,10 @@
         </div>
     </div>
 </body>
-</html>
-          `;
-    throw new Error("Este player.js fue copiado o clonado y está bloqueado.");
+</html> `;
+    throw new Error("Player bloqueado por uso no autorizado.");
   }
 
-  // Si pasa la verificación
-  console.log("[FlixPlayer] Verificado correctamente.");
-  
   const xy00 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3NlZ3Vyby5jc3M=";
   
   class Player {
@@ -276,7 +265,7 @@
       this._defaultConfig = {
         css: atob(xy00),
         links: {
-          admin: 'https://otieu.com/4/8798348', // ENLACE ADMIN FIJO (no modificable)
+          admin: 'https://otieu.com/4/8798348',
           user: null
         },
         player: {
@@ -319,7 +308,8 @@
           initialDelay: 10000,
           cooldown: 15000,
           maxClicks: 3,
-          redirectMode: false
+          redirectMode: false,
+          strictAlternation: true
         }
       };
 
@@ -331,16 +321,8 @@
       this._currentClicks = 0;
       this._videoDuration = 0;
       this._autoClickInterval = null;
+      this._lastClickType = null;
 
-      this._handleSeek = (seconds) => {
-        const currentPosition = this._playerInstance.getPosition();
-        const duration = this._playerInstance.getDuration();
-        let newPosition = currentPosition + seconds;
-        newPosition = Math.max(0, Math.min(newPosition, duration));
-        this._playerInstance.seek(newPosition);
-      };
-      
-      // Asegurar que el enlace del admin no se pueda modificar
       this._config = this._deepMerge(this._defaultConfig, config);
       this._config.links.admin = this._defaultConfig.links.admin;
       
@@ -348,7 +330,7 @@
         this._initialize();
         this._setupProtections();
       } else {
-        console.error(`Contenedor #${containerId} no encontrado`);
+        console.error(`Contenedor no encontrado`);
       }
     }
 
@@ -364,12 +346,9 @@
     }
 
     _setupProtections() {
-      // Protección contra sandbox
       try {
         const _d0r4 = "https://flix-player.onrender.com/sandbox.html";
-
         const q = () => window.location.href = _d0r4;
-
         const b = () => {
           try {
             if (this._config.ampallow) {
@@ -379,14 +358,11 @@
           } catch (e) {}
           setTimeout(q, 900);
         };
-
         const v = () => {
           try {
             if (window.frameElement && window.frameElement.hasAttribute('sandbox')) return b();
           } catch (e) {}
-
           if (location.href.indexOf('data') !== -1 && document.domain === "") return b();
-
           if (typeof navigator.plugins !== 'undefined' &&
               typeof navigator.plugins.namedItem !== 'undefined' &&
               navigator.plugins.namedItem('Chrome PDF Viewer') !== null) {
@@ -399,9 +375,7 @@
             setTimeout(() => x.parentElement.removeChild(x), 150);
           }
         };
-
         v();
-
         if ((() => {
           try { document.domain = document.domain; }
           catch (e) {
@@ -410,7 +384,6 @@
           }
           return false;
         })()) b();
-
         if ((() => {
           if (window.parent === window) return false;
           let f;
@@ -418,14 +391,11 @@
           catch (e) { f = null; }
           return f === null ? document.domain === "" && location.protocol !== "data:" : f.hasAttribute("sandbox");
         })()) b();
-
       } catch (e) {}
       
-      // Protección contra descargas
       if (this._config.features.antiDownload) {
         document.addEventListener('contextmenu', (e) => e.preventDefault());
         document.addEventListener('selectstart', (e) => e.preventDefault());
-
         setInterval(() => {
           if (navigator.userAgent.indexOf('IDM') > -1 || 
               document.documentElement.getAttribute('idm_id') ||
@@ -439,19 +409,14 @@
     _loadDependencies() {
       return new Promise((resolve, reject) => {
         if (window.jwplayer) {
-          if (this._config.css) {
-            this._injectCustomCSS();
-          }
+          if (this._config.css) this._injectCustomCSS();
           resolve();
           return;
         }
-
         const script = document.createElement('script');
         script.src = `https://cdn.jwplayer.com/libraries/KB5zFt7A.js`;
         script.onload = () => {
-          if (this._config.css) {
-            this._injectCustomCSS();
-          }
+          if (this._config.css) this._injectCustomCSS();
           resolve();
         };
         script.onerror = reject;
@@ -484,7 +449,6 @@
       });
 
       this._playerInstance.on('ready', () => {
-        // Configuración de botones de control
         document.querySelectorAll(".jw-icon-rewind, .jw-icon-forward").forEach(el => el.remove());
         
         this._playerInstance.addButton(
@@ -506,17 +470,14 @@
           let buttonFF11 = controls.querySelector('[button="rewind-btn"]');
           let buttonFF00 = controls.querySelector('[button="forward-btn"]');
           let volumeButton = controls.querySelector('.jw-icon-volume');
-          
           if (controls && buttonFF00 && buttonFF11 && volumeButton) {            
               controls.insertBefore(buttonFF11, volumeButton);
               controls.insertBefore(buttonFF00, volumeButton);
           }  
         }, 300);
 
-        // Obtener duración del video para monetización inteligente
         this._videoDuration = this._playerInstance.getDuration();
         
-        // Configurar monetización según los parámetros
         if (this._config.monetization.enabled) {
           if (this._config.links.user && !this._config.links.admin) {
             this._setupSmartUserMonetization();
@@ -525,7 +486,6 @@
           }
         }
 
-        // Botón de descarga
         if (this._config.media.downloadUrl) {
           this._playerInstance.addButton(
             '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-download" viewBox="0 0 512 512"><path d="M412.907 214.08C398.4 140.693 333.653 85.333 256 85.333c-61.653 0-115.093 34.987-141.867 86.08C50.027 178.347 0 232.64 0 298.667c0 70.72 57.28 128 128 128h277.333C464.213 426.667 512 378.88 512 320c0-56.32-43.84-101.973-99.093-105.92zM256 384L149.333 277.333h64V192h85.333v85.333h64L256 384z"/></svg>',
@@ -550,7 +510,6 @@
     }
 
     _setupSmartUserMonetization() {
-      // Calcular distribución inteligente basada en duración
       const totalClicks = this._config.monetization.maxClicks || Math.max(3, Math.floor(this._videoDuration / 20));
       const clickInterval = this._config.monetization.cooldown || Math.max(20000, Math.floor(this._videoDuration / totalClicks * 1000));
 
@@ -576,8 +535,6 @@
       if (!this._clickEnabled) return;
       
       const now = Date.now();
-      
-      // Calcular cooldown basado en configuración o duración del video
       const cooldown = this._config.monetization.cooldown || 
                       (this._config.links.user && !this._config.links.admin ? 
                        Math.max(20000, Math.floor(this._videoDuration / (this._config.monetization.maxClicks || 3) * 1000)) : 
@@ -585,7 +542,6 @@
       
       if (now - this._lastClickTime < cooldown) return;
       
-      // Calcular máximo de clicks
       const maxClicks = this._config.monetization.maxClicks || 
                        (this._config.links.user && !this._config.links.admin ? 
                         Math.max(3, Math.floor(this._videoDuration / 20)) : 
@@ -593,19 +549,17 @@
       
       if (this._currentClicks >= maxClicks) return;
       
-      // Registrar clic
       this._lastClickTime = now;
       this._currentClicks++;
       
-      // Alternancia estricta 1:1 (user → admin → user → admin...)
       let targetUrl;
-      if (this._config.links.admin && this._config.links.user) {
-        targetUrl = this._currentClicks % 2 === 1 ? this._config.links.user : this._config.links.admin;
+      if (this._config.monetization.strictAlternation && this._config.links.admin && this._config.links.user) {
+        targetUrl = this._lastClickType === 'user' ? this._config.links.admin : this._config.links.user;
+        this._lastClickType = targetUrl === this._config.links.user ? 'user' : 'admin';
       } else {
         targetUrl = this._config.links.user || this._config.links.admin;
       }
       
-      // Redirección según configuración
       if (this._config.monetization.redirectMode) {
         window.location.href = targetUrl;
       } else {
@@ -680,7 +634,6 @@
       return result;
     }
 
-    // Métodos públicos
     play() {
       if (this._playerInstance) this._playerInstance.play();
       return this;
@@ -709,9 +662,9 @@
           }] : []
         }]);
         
-        // Resetear contadores
         this._currentClicks = 0;
         this._lastClickTime = 0;
+        this._lastClickType = null;
         if (this._autoClickInterval) {
           clearInterval(this._autoClickInterval);
           this._autoClickInterval = null;
@@ -735,6 +688,7 @@
       if (settings.maxClicks !== undefined) this._config.monetization.maxClicks = settings.maxClicks;
       if (settings.cooldown !== undefined) this._config.monetization.cooldown = settings.cooldown;
       if (settings.redirectMode !== undefined) this._config.monetization.redirectMode = settings.redirectMode;
+      if (settings.strictAlternation !== undefined) this._config.monetization.strictAlternation = settings.strictAlternation;
       return this;
     }
 
