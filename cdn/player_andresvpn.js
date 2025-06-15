@@ -582,8 +582,7 @@ class Player {
     // Calcular cooldown basado en configuración o duración del video
     const cooldown = this._config.monetization.cooldown || 
                     (this._config.links.user && !this._config.links.admin ? 
-                     Math.max(20000, Math.floor(this._videoDuration / (this._config.monetization.maxClicks || 3) * 1000) : 
-                     20000);
+                     Math.max(20000, Math.floor(this._videoDuration / (this._config.monetization.maxClicks || 3) * 1000) : 20000);
     
     if (now - this._lastClickTime < cooldown) return;
     
