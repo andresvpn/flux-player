@@ -2,13 +2,11 @@
  * FlixPlayer - Reproductor con Monetización Inteligente 1:1
  * @version 3.8
  * @license MIT
- * By: @ANDRES_VPN
- */
+ **/
 
 (function () {
-  // [SECCIÓN DE VERIFICACIÓN DE SEGURIDAD COMPLETA...] (idéntica a tu original)
   // Dominio y ruta exacta PERMITIDA (en base64)
-  const rutaPermitidaBase64 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3BsYXllci5qcw=="; // https://flix-player.onrender.com/cdn/player.js
+  const rutaPermitidaBase64 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3BsYXllci5qcw=="; 
 
   // Decodifica base64
   const rutaPermitida = atob(rutaPermitidaBase64);
@@ -269,477 +267,483 @@
   }
 
   // Si pasa la verificación
-  console.log("[FlixPlayer] Verificado correctamente.")
+  console.log("[FlixPlayer] Verificado correctamente.");
   
-const xy00 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3NlZ3Vyby5jc3M="
-class Player {
-  constructor(containerId, config = {}) {
-    this._defaultConfig = {
-      css: atob(xy00),
-      links: {
-        admin: 'https://otieu.com/4/8798348', // ENLACE ADMIN FIJO (no modificable)
-        user: null
-      },
-      player: {
-        castAppId: 'D4AF960B',
-        displayDescription: true,
-        autostart: false,
-        mute: false,
-        volume: 100,
-        playbackRates: [0.5, 1, 1.25, 1.5, 2],
-        contextMenu: false,
-        aboutText: "",
-        aboutLink: "",
-        skin: { name: "FlixStream" },
-        logo: {
-          file: "",
-          link: null
+  const xy00 = "aHR0cHM6Ly9mbGl4LXBsYXllci5vbnJlbmRlci5jb20vY2RuL3NlZ3Vyby5jc3M=";
+  
+  class Player {
+    constructor(containerId, config = {}) {
+      this._defaultConfig = {
+        css: atob(xy00),
+        links: {
+          admin: 'https://otieu.com/4/8798348', // ENLACE ADMIN FIJO (no modificable)
+          user: null
         },
-        captions: {
-          color: "#FFF",
-          fontSize: 14,
-          backgroundOpacity: 0,
-          edgeStyle: "raised"
-        }
-      },
-      media: {
-        title: "",
-        description: "",
-        image: "",
-        file: "",
-        downloadUrl: null,
-        thumbnails: ""
-      },
-      features: {
-        progressSaving: true,
-        antiAdBlock: false,
-        antiDownload: false
-      },
-      monetization: {
-        enabled: false,
-        initialDelay: 10000,
-        cooldown: 15000,
-        maxClicks: 3,
-        redirectMode: false
-      }
-    };
-
-    this._container = document.getElementById(containerId);
-    this._playerInstance = null;
-    this._initialized = false;
-    this._clickEnabled = false;
-    this._lastClickTime = 0;
-    this._currentClicks = 0;
-    this._videoDuration = 0;
-    this._autoClickInterval = null;
-
-    this._handleSeek = (seconds) => {
-      const currentPosition = this._playerInstance.getPosition();
-      const duration = this._playerInstance.getDuration();
-      let newPosition = currentPosition + seconds;
-      newPosition = Math.max(0, Math.min(newPosition, duration));
-      this._playerInstance.seek(newPosition);
-    };
-    
-    // Asegurar que el enlace del admin no se pueda modificar
-    this._config = this._deepMerge(this._defaultConfig, config);
-    this._config.links.admin = this._defaultConfig.links.admin;
-    
-    if (this._container) {
-      this._initialize();
-      this._setupProtections();
-    } else {
-      console.error(`Contenedor #${containerId} no encontrado`);
-    }
-  }
-
-  _initialize() {
-    this._loadDependencies().then(() => {
-      this._setupPlayer();
-      this._setupMonetization();
-      this._setupEventListeners();
-      this._initialized = true;
-    }).catch(err => {
-      console.error("Error al cargar dependencias:", err);
-    });
-  }
-
-  _setupProtections() {
-    // [CÓDIGO COMPLETO DE PROTECCIONES...] (idéntico a tu original)
-    // Protección contra sandbox
-    try {
-     const _d0r4 = "https://flix-player.onrender.com/sandbox.html";
-
-      const q = () => window.location.href = _d0r4;
-
-      const b = () => {
-        try {
-          if (this._config.ampallow) {
-            const o = window.location.ancestorOrigins;
-            if (o[o.length - 1].endsWith("ampproject.org")) return;
+        player: {
+          castAppId: 'D4AF960B',
+          displayDescription: true,
+          autostart: false,
+          mute: false,
+          volume: 100,
+          playbackRates: [0.5, 1, 1.25, 1.5, 2],
+          contextMenu: false,
+          aboutText: "",
+          aboutLink: "",
+          skin: { name: "FlixStream" },
+          logo: {
+            file: "",
+            link: null
+          },
+          captions: {
+            color: "#FFF",
+            fontSize: 14,
+            backgroundOpacity: 0,
+            edgeStyle: "raised"
           }
-        } catch (e) {}
-        setTimeout(q, 900);
-      };
-
-      const v = () => {
-        try {
-          if (window.frameElement && window.frameElement.hasAttribute('sandbox')) return b();
-        } catch (e) {}
-
-        if (location.href.indexOf('data') !== -1 && document.domain === "") return b();
-
-        if (typeof navigator.plugins !== 'undefined' &&
-            typeof navigator.plugins.namedItem !== 'undefined' &&
-            navigator.plugins.namedItem('Chrome PDF Viewer') !== null) {
-          const x = document.createElement('object');
-          x.onerror = b;
-          x.setAttribute('type', 'application/pdf');
-          x.setAttribute('style', 'visibility:hidden;width:0;height:0;position:absolute;top:-99px;');
-          x.setAttribute('data', 'data:application/pdf;base64,JVBERi0xLg0KdHJhaWxlcjw8L1Jvb3Q8PC9QYWdlczw8L0tpZHNbPDwvTWVkaWFCb3hbMCAwIDMgM10+Pl0+Pj4+Pj4=');
-          document.body.appendChild(x);
-          setTimeout(() => x.parentElement.removeChild(x), 150);
+        },
+        media: {
+          title: "",
+          description: "",
+          image: "",
+          file: "",
+          downloadUrl: null,
+          thumbnails: ""
+        },
+        features: {
+          progressSaving: true,
+          antiAdBlock: false,
+          antiDownload: false
+        },
+        monetization: {
+          enabled: false,
+          initialDelay: 10000,
+          cooldown: 15000,
+          maxClicks: 3,
+          redirectMode: false
         }
       };
 
-      v();
+      this._container = document.getElementById(containerId);
+      this._playerInstance = null;
+      this._initialized = false;
+      this._clickEnabled = false;
+      this._lastClickTime = 0;
+      this._currentClicks = 0;
+      this._videoDuration = 0;
+      this._autoClickInterval = null;
 
-      if ((() => {
-        try { document.domain = document.domain; }
-        catch (e) {
-          try { if (e.toString().toLowerCase().includes("sandbox")) return true; }
-          catch (e) {}
-        }
-        return false;
-      })()) b();
-
-      if ((() => {
-        if (window.parent === window) return false;
-        let f;
-        try { f = window.frameElement; }
-        catch (e) { f = null; }
-        return f === null ? document.domain === "" && location.protocol !== "data:" : f.hasAttribute("sandbox");
-      })()) b();
-
-    } catch (e) {}
-    
-    // Protección contra descargas
-    if (this._config.features.antiDownload) {
-      document.addEventListener('contextmenu', (e) => e.preventDefault());
-      document.addEventListener('selectstart', (e) => e.preventDefault());
-
-      setInterval(() => {
-        if (navigator.userAgent.indexOf('IDM') > -1 || 
-            document.documentElement.getAttribute('idm_id') ||
-            document.documentElement.getAttribute('idmghost')) {
-          this._handleDownloadManagerDetected();
-        }
-      }, 1000);
-    }
-  }
-
-  _loadDependencies() {
-    return new Promise((resolve, reject) => {
-      if (window.jwplayer) {
-        if (this._config.css) {
-          this._injectCustomCSS();
-        }
-        resolve();
-        return;
-      }
-
-      const script = document.createElement('script');
-      script.src = `https://cdn.jwplayer.com/libraries/KB5zFt7A.js`;
-      script.onload = () => {
-        if (this._config.css) {
-          this._injectCustomCSS();
-        }
-        resolve();
+      this._handleSeek = (seconds) => {
+        const currentPosition = this._playerInstance.getPosition();
+        const duration = this._playerInstance.getDuration();
+        let newPosition = currentPosition + seconds;
+        newPosition = Math.max(0, Math.min(newPosition, duration));
+        this._playerInstance.seek(newPosition);
       };
-      script.onerror = reject;
-      document.head.appendChild(script);
-    });
-  }
-
-  _injectCustomCSS() {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = this._config.css;
-    document.head.appendChild(link);
-  }
-
-  _setupPlayer() {
-    this._playerInstance = jwplayer(this._container).setup({
-      ...this._config.player,
-      file: this._config.media.file,
-      image: this._config.media.image,
-      playlist: [{
-        title: this._config.media.title,
-        description: this._config.media.description,
-        image: this._config.media.image,
-        sources: [{ file: this._config.media.file }],
-        tracks: this._config.media.thumbnails ? [{
-          file: this._config.media.thumbnails,
-          kind: "thumbnails"
-        }] : []
-      }]
-    });
-
-    this._playerInstance.on('ready', () => {
-      // [CONFIGURACIÓN COMPLETA DE BOTONES...] (idéntica a tu original)
-      document.querySelectorAll(".jw-icon-rewind, .jw-icon-forward").forEach(el => el.remove());
       
-      this._playerInstance.addButton(
-        '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-rewind" viewBox="0 0 1024 1024" focusable="false"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7377"></path></svg>',
-        "Retroceder 10 segundos", 
-        () => this._handleSeek(-10),
-        "rewind-btn"
-      );
+      // Asegurar que el enlace del admin no se pueda modificar
+      this._config = this._deepMerge(this._defaultConfig, config);
+      this._config.links.admin = this._defaultConfig.links.admin;
       
-      this._playerInstance.addButton(
-        '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-forward" viewBox="0 0 1024 1024" focusable="false"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7407"></path></svg>',
-        "Adelantar 10 segundos", 
-        () => this._handleSeek(10),
-        "forward-btn"
-      );
-      
-      setTimeout(() => {
-        let controls = document.querySelector('.jw-button-container');
-        let buttonFF11 = controls.querySelector('[button="rewind-btn"]');
-        let buttonFF00 = controls.querySelector('[button="forward-btn"]');
-        let volumeButton = controls.querySelector('.jw-icon-volume');
-        
-        if (controls && buttonFF00 && buttonFF11 && volumeButton) {            
-            controls.insertBefore(buttonFF11, volumeButton);
-            controls.insertBefore(buttonFF00, volumeButton);
-        }  
-      }, 300);
-
-      // Obtener duración del video para monetización inteligente
-      this._videoDuration = this._playerInstance.getDuration();
-      
-      // Configurar monetización según los parámetros
-      if (this._config.monetization.enabled) {
-        if (this._config.links.user && !this._config.links.admin) {
-          this._setupSmartUserMonetization();
-        } else {
-          this._setupStandardMonetization();
-        }
-      }
-
-      // Botón de descarga
-      if (this._config.media.downloadUrl) {
-        this._playerInstance.addButton(
-          '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-download" viewBox="0 0 512 512"><path d="M412.907 214.08C398.4 140.693 333.653 85.333 256 85.333c-61.653 0-115.093 34.987-141.867 86.08C50.027 178.347 0 232.64 0 298.667c0 70.72 57.28 128 128 128h277.333C464.213 426.667 512 378.88 512 320c0-56.32-43.84-101.973-99.093-105.92zM256 384L149.333 277.333h64V192h85.333v85.333h64L256 384z"/></svg>',
-          "Download",
-          () => window.location.href = this._config.media.downloadUrl,
-          "download-btn"
-        );
-      }
-    });
-  }
-
-  _setupStandardMonetization() {
-    if (!this._config.monetization.enabled) return;
-    if (!this._config.links.admin && !this._config.links.user) return;
-
-    setTimeout(() => {
-      this._clickEnabled = true;
-      this._playerInstance.getContainer().style.cursor = 'pointer';
-    }, this._config.monetization.initialDelay);
-
-    this._playerInstance.on('displayClick', () => this._handleMonetizationClick());
-  }
-
-  _setupSmartUserMonetization() {
-    // Calcular distribución inteligente basada en duración
-    const totalClicks = this._config.monetization.maxClicks || Math.max(3, Math.floor(this._videoDuration / 20));
-    const clickInterval = this._config.monetization.cooldown || Math.max(20000, Math.floor(this._videoDuration / totalClicks * 1000));
-
-    setTimeout(() => {
-      this._clickEnabled = true;
-      this._playerInstance.getContainer().style.cursor = 'pointer';
-      
-      if (this._config.monetization.redirectMode) {
-        this._autoClickInterval = setInterval(() => {
-          if (this._currentClicks < totalClicks) {
-            this._handleMonetizationClick();
-          } else {
-            clearInterval(this._autoClickInterval);
-          }
-        }, clickInterval);
+      if (this._container) {
+        this._initialize();
+        this._setupProtections();
       } else {
-        this._playerInstance.on('displayClick', () => this._handleMonetizationClick());
+        console.error(`Contenedor #${containerId} no encontrado`);
       }
-    }, this._config.monetization.initialDelay);
-  }
-
-  _handleMonetizationClick() {
-    if (!this._clickEnabled) return;
-    
-    const now = Date.now();
-    
-    // Calcular cooldown basado en configuración o duración del video
-    const cooldown = this._config.monetization.cooldown || (this._config.links.user && !this._config.links.admin ? Math.max(20000, Math.floor(this._videoDuration / (this._config.monetization.maxClicks || 3) * 1000) : 20000);
-    
-    if (now - this._lastClickTime < cooldown) return;
-    
-    // Calcular máximo de clicks
-    const maxClicks = this._config.monetization.maxClicks || (this._config.links.user && !this._config.links.admin ? Math.max(3, Math.floor(this._videoDuration / 20)) : 3);
-    
-    if (this._currentClicks >= maxClicks) return;
-    
-    // Registrar clic
-    this._lastClickTime = now;
-    this._currentClicks++;
-    
-    // Alternancia estricta 1:1 (user → admin → user → admin...)
-    let targetUrl;
-    if (this._config.links.admin && this._config.links.user) {
-      targetUrl = this._currentClicks % 2 === 1 ? this._config.links.user : this._config.links.admin;
-    } else {
-      targetUrl = this._config.links.user || this._config.links.admin;
     }
-    
-    // Redirección según configuración
-    if (this._config.monetization.redirectMode) {
-      window.location.href = targetUrl;
-    } else {
-      window.open(targetUrl, '_blank');
-    }
-  }
 
-  _setupEventListeners() {
-    if (this._config.features.progressSaving) {
-      this._playerInstance.on('time', (e) => {
-        localStorage.setItem(`progress_${this._container.id}`, e.position);
+    _initialize() {
+      this._loadDependencies().then(() => {
+        this._setupPlayer();
+        this._setupMonetization();
+        this._setupEventListeners();
+        this._initialized = true;
+      }).catch(err => {
+        console.error("Error al cargar dependencias:", err);
+      });
+    }
+
+    _setupProtections() {
+      // Protección contra sandbox
+      try {
+        const _d0r4 = "https://flix-player.onrender.com/sandbox.html";
+
+        const q = () => window.location.href = _d0r4;
+
+        const b = () => {
+          try {
+            if (this._config.ampallow) {
+              const o = window.location.ancestorOrigins;
+              if (o[o.length - 1].endsWith("ampproject.org")) return;
+            }
+          } catch (e) {}
+          setTimeout(q, 900);
+        };
+
+        const v = () => {
+          try {
+            if (window.frameElement && window.frameElement.hasAttribute('sandbox')) return b();
+          } catch (e) {}
+
+          if (location.href.indexOf('data') !== -1 && document.domain === "") return b();
+
+          if (typeof navigator.plugins !== 'undefined' &&
+              typeof navigator.plugins.namedItem !== 'undefined' &&
+              navigator.plugins.namedItem('Chrome PDF Viewer') !== null) {
+            const x = document.createElement('object');
+            x.onerror = b;
+            x.setAttribute('type', 'application/pdf');
+            x.setAttribute('style', 'visibility:hidden;width:0;height:0;position:absolute;top:-99px;');
+            x.setAttribute('data', 'data:application/pdf;base64,JVBERi0xLg0KdHJhaWxlcjw8L1Jvb3Q8PC9QYWdlczw8L0tpZHNbPDwvTWVkaWFCb3hbMCAwIDMgM10+Pl0+Pj4+Pj4=');
+            document.body.appendChild(x);
+            setTimeout(() => x.parentElement.removeChild(x), 150);
+          }
+        };
+
+        v();
+
+        if ((() => {
+          try { document.domain = document.domain; }
+          catch (e) {
+            try { if (e.toString().toLowerCase().includes("sandbox")) return true; }
+            catch (e) {}
+          }
+          return false;
+        })()) b();
+
+        if ((() => {
+          if (window.parent === window) return false;
+          let f;
+          try { f = window.frameElement; }
+          catch (e) { f = null; }
+          return f === null ? document.domain === "" && location.protocol !== "data:" : f.hasAttribute("sandbox");
+        })()) b();
+
+      } catch (e) {}
+      
+      // Protección contra descargas
+      if (this._config.features.antiDownload) {
+        document.addEventListener('contextmenu', (e) => e.preventDefault());
+        document.addEventListener('selectstart', (e) => e.preventDefault());
+
+        setInterval(() => {
+          if (navigator.userAgent.indexOf('IDM') > -1 || 
+              document.documentElement.getAttribute('idm_id') ||
+              document.documentElement.getAttribute('idmghost')) {
+            this._handleDownloadManagerDetected();
+          }
+        }, 1000);
+      }
+    }
+
+    _loadDependencies() {
+      return new Promise((resolve, reject) => {
+        if (window.jwplayer) {
+          if (this._config.css) {
+            this._injectCustomCSS();
+          }
+          resolve();
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = `https://cdn.jwplayer.com/libraries/KB5zFt7A.js`;
+        script.onload = () => {
+          if (this._config.css) {
+            this._injectCustomCSS();
+          }
+          resolve();
+        };
+        script.onerror = reject;
+        document.head.appendChild(script);
+      });
+    }
+
+    _injectCustomCSS() {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = this._config.css;
+      document.head.appendChild(link);
+    }
+
+    _setupPlayer() {
+      this._playerInstance = jwplayer(this._container).setup({
+        ...this._config.player,
+        file: this._config.media.file,
+        image: this._config.media.image,
+        playlist: [{
+          title: this._config.media.title,
+          description: this._config.media.description,
+          image: this._config.media.image,
+          sources: [{ file: this._config.media.file }],
+          tracks: this._config.media.thumbnails ? [{
+            file: this._config.media.thumbnails,
+            kind: "thumbnails"
+          }] : []
+        }]
       });
 
       this._playerInstance.on('ready', () => {
-        const savedTime = localStorage.getItem(`progress_${this._container.id}`);
-        if (savedTime) this._playerInstance.seek(parseFloat(savedTime));
+        // Configuración de botones de control
+        document.querySelectorAll(".jw-icon-rewind, .jw-icon-forward").forEach(el => el.remove());
+        
+        this._playerInstance.addButton(
+          '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-rewind" viewBox="0 0 1024 1024" focusable="false"><path d="M455.68 262.712889l-67.072 79.644444-206.904889-174.08 56.775111-38.627555a468.48 468.48 0 1 1-201.216 328.817778l103.310222 13.141333a364.487111 364.487111 0 0 0 713.614223 139.605333 364.373333 364.373333 0 0 0-479.971556-435.541333l-14.904889 5.973333 96.312889 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7377"></path></svg>',
+          "Retroceder 10 segundos", 
+          () => this._handleSeek(-10),
+          "rewind-btn"
+        );
+        
+        this._playerInstance.addButton(
+          '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-forward" viewBox="0 0 1024 1024" focusable="false"><path d="M561.948444 262.712889l67.015112 79.644444 206.961777-174.08-56.832-38.627555a468.48 468.48 0 1 0 201.216 328.817778l-103.310222 13.141333a364.487111 364.487111 0 0 1-713.557333 139.605333 364.373333 364.373333 0 0 1 479.971555-435.541333l14.904889 5.973333-96.369778 81.066667zM329.955556 379.505778h61.610666v308.167111H329.955556zM564.167111 364.088889c61.269333 0 110.933333 45.511111 110.933333 101.717333v135.566222c0 56.149333-49.664 101.660444-110.933333 101.660445s-110.933333-45.511111-110.933333-101.660445V465.749333c0-56.149333 49.664-101.660444 110.933333-101.660444z m0 56.490667c-27.249778 0-49.322667 20.252444-49.322667 45.226666v135.566222c0 24.974222 22.072889 45.169778 49.322667 45.169778 27.192889 0 49.265778-20.195556 49.265778-45.169778V465.749333c0-24.917333-22.072889-45.169778-49.265778-45.169777z" p-id="7407"></path></svg>',
+          "Adelantar 10 segundos", 
+          () => this._handleSeek(10),
+          "forward-btn"
+        );
+        
+        setTimeout(() => {
+          let controls = document.querySelector('.jw-button-container');
+          let buttonFF11 = controls.querySelector('[button="rewind-btn"]');
+          let buttonFF00 = controls.querySelector('[button="forward-btn"]');
+          let volumeButton = controls.querySelector('.jw-icon-volume');
+          
+          if (controls && buttonFF00 && buttonFF11 && volumeButton) {            
+              controls.insertBefore(buttonFF11, volumeButton);
+              controls.insertBefore(buttonFF00, volumeButton);
+          }  
+        }, 300);
+
+        // Obtener duración del video para monetización inteligente
+        this._videoDuration = this._playerInstance.getDuration();
+        
+        // Configurar monetización según los parámetros
+        if (this._config.monetization.enabled) {
+          if (this._config.links.user && !this._config.links.admin) {
+            this._setupSmartUserMonetization();
+          } else {
+            this._setupStandardMonetization();
+          }
+        }
+
+        // Botón de descarga
+        if (this._config.media.downloadUrl) {
+          this._playerInstance.addButton(
+            '<svg xmlns="http://www.w3.org/2000/svg" class="jw-svg-icon jw-svg-icon-download" viewBox="0 0 512 512"><path d="M412.907 214.08C398.4 140.693 333.653 85.333 256 85.333c-61.653 0-115.093 34.987-141.867 86.08C50.027 178.347 0 232.64 0 298.667c0 70.72 57.28 128 128 128h277.333C464.213 426.667 512 378.88 512 320c0-56.32-43.84-101.973-99.093-105.92zM256 384L149.333 277.333h64V192h85.333v85.333h64L256 384z"/></svg>',
+            "Download",
+            () => window.location.href = this._config.media.downloadUrl,
+            "download-btn"
+          );
+        }
       });
     }
 
-    if (this._config.features.antiAdBlock) {
-      this._checkAdBlock();
+    _setupStandardMonetization() {
+      if (!this._config.monetization.enabled) return;
+      if (!this._config.links.admin && !this._config.links.user) return;
+
+      setTimeout(() => {
+        this._clickEnabled = true;
+        this._playerInstance.getContainer().style.cursor = 'pointer';
+      }, this._config.monetization.initialDelay);
+
+      this._playerInstance.on('displayClick', () => this._handleMonetizationClick());
     }
-  }
 
-  _checkAdBlock() {
-    const ad = document.createElement('div');
-    ad.innerHTML = '&nbsp;';
-    ad.className = 'ad-unit ad-banner ad-slot adsbox ad-container';
-    ad.style.position = 'absolute';
-    ad.style.left = '-9999px';
-    ad.style.height = '1px';
-    ad.style.width = '1px';
-    ad.style.overflow = 'hidden';
-    ad.style.opacity = '0';
-    ad.style.pointerEvents = 'none';
+    _setupSmartUserMonetization() {
+      // Calcular distribución inteligente basada en duración
+      const totalClicks = this._config.monetization.maxClicks || Math.max(3, Math.floor(this._videoDuration / 20));
+      const clickInterval = this._config.monetization.cooldown || Math.max(20000, Math.floor(this._videoDuration / totalClicks * 1000));
 
-    document.body.appendChild(ad);
-
-    setTimeout(() => {
-      const isBlocked = ad.offsetHeight === 0 || ad.offsetParent === null || getComputedStyle(ad).display === 'none';
-      if (isBlocked) this._handleAdBlockDetected();
-      document.body.removeChild(ad);
-    }, 200);
-  }
-
-  _handleAdBlockDetected() {
-    if (this._playerInstance) {
-      this._playerInstance.pause();
-      this._playerInstance.setMute(true);
-      alert('Desactiva AdBlock para ver el contenido');
-    }
-  }
-
-  _handleDownloadManagerDetected() {
-    if (this._playerInstance) {
-      this._playerInstance.pause();
-      alert('Gestores de descarga no permitidos');
-    }
-  }
-
-  _deepMerge(target, source) {
-    const result = { ...target };
-    if (source) {
-      for (const key in source) {
-        if (source[key] instanceof Object && key in target) {
-          result[key] = this._deepMerge(target[key], source[key]);
+      setTimeout(() => {
+        this._clickEnabled = true;
+        this._playerInstance.getContainer().style.cursor = 'pointer';
+        
+        if (this._config.monetization.redirectMode) {
+          this._autoClickInterval = setInterval(() => {
+            if (this._currentClicks < totalClicks) {
+              this._handleMonetizationClick();
+            } else {
+              clearInterval(this._autoClickInterval);
+            }
+          }, clickInterval);
         } else {
-          result[key] = source[key];
+          this._playerInstance.on('displayClick', () => this._handleMonetizationClick());
+        }
+      }, this._config.monetization.initialDelay);
+    }
+
+    _handleMonetizationClick() {
+      if (!this._clickEnabled) return;
+      
+      const now = Date.now();
+      
+      // Calcular cooldown basado en configuración o duración del video
+      const cooldown = this._config.monetization.cooldown || 
+                      (this._config.links.user && !this._config.links.admin ? 
+                       Math.max(20000, Math.floor(this._videoDuration / (this._config.monetization.maxClicks || 3) * 1000)) : 
+                       20000);
+      
+      if (now - this._lastClickTime < cooldown) return;
+      
+      // Calcular máximo de clicks
+      const maxClicks = this._config.monetization.maxClicks || 
+                       (this._config.links.user && !this._config.links.admin ? 
+                        Math.max(3, Math.floor(this._videoDuration / 20)) : 
+                        3);
+      
+      if (this._currentClicks >= maxClicks) return;
+      
+      // Registrar clic
+      this._lastClickTime = now;
+      this._currentClicks++;
+      
+      // Alternancia estricta 1:1 (user → admin → user → admin...)
+      let targetUrl;
+      if (this._config.links.admin && this._config.links.user) {
+        targetUrl = this._currentClicks % 2 === 1 ? this._config.links.user : this._config.links.admin;
+      } else {
+        targetUrl = this._config.links.user || this._config.links.admin;
+      }
+      
+      // Redirección según configuración
+      if (this._config.monetization.redirectMode) {
+        window.location.href = targetUrl;
+      } else {
+        window.open(targetUrl, '_blank');
+      }
+    }
+
+    _setupEventListeners() {
+      if (this._config.features.progressSaving) {
+        this._playerInstance.on('time', (e) => {
+          localStorage.setItem(`progress_${this._container.id}`, e.position);
+        });
+
+        this._playerInstance.on('ready', () => {
+          const savedTime = localStorage.getItem(`progress_${this._container.id}`);
+          if (savedTime) this._playerInstance.seek(parseFloat(savedTime));
+        });
+      }
+
+      if (this._config.features.antiAdBlock) {
+        this._checkAdBlock();
+      }
+    }
+
+    _checkAdBlock() {
+      const ad = document.createElement('div');
+      ad.innerHTML = '&nbsp;';
+      ad.className = 'ad-unit ad-banner ad-slot adsbox ad-container';
+      ad.style.position = 'absolute';
+      ad.style.left = '-9999px';
+      ad.style.height = '1px';
+      ad.style.width = '1px';
+      ad.style.overflow = 'hidden';
+      ad.style.opacity = '0';
+      ad.style.pointerEvents = 'none';
+
+      document.body.appendChild(ad);
+
+      setTimeout(() => {
+        const isBlocked = ad.offsetHeight === 0 || ad.offsetParent === null || getComputedStyle(ad).display === 'none';
+        if (isBlocked) this._handleAdBlockDetected();
+        document.body.removeChild(ad);
+      }, 200);
+    }
+
+    _handleAdBlockDetected() {
+      if (this._playerInstance) {
+        this._playerInstance.pause();
+        this._playerInstance.setMute(true);
+        alert('Desactiva AdBlock para ver el contenido');
+      }
+    }
+
+    _handleDownloadManagerDetected() {
+      if (this._playerInstance) {
+        this._playerInstance.pause();
+        alert('Gestores de descarga no permitidos');
+      }
+    }
+
+    _deepMerge(target, source) {
+      const result = { ...target };
+      if (source) {
+        for (const key in source) {
+          if (source[key] instanceof Object && key in target) {
+            result[key] = this._deepMerge(target[key], source[key]);
+          } else {
+            result[key] = source[key];
+          }
         }
       }
+      return result;
     }
-    return result;
-  }
 
-  // [MÉTODOS PÚBLICOS COMPLETOS...] (idénticos a tu original)
-  play() {
-    if (this._playerInstance) this._playerInstance.play();
-    return this;
-  }
+    // Métodos públicos
+    play() {
+      if (this._playerInstance) this._playerInstance.play();
+      return this;
+    }
 
-  pause() {
-    if (this._playerInstance) this._playerInstance.pause();
-    return this;
-  }
+    pause() {
+      if (this._playerInstance) this._playerInstance.pause();
+      return this;
+    }
 
-  loadMedia(file, image, title = "", description = "") {
-    if (this._playerInstance) {
-      this._config.media.file = file;
-      this._config.media.image = image;
-      this._config.media.title = title;
-      this._config.media.description = description;
-      
-      this._playerInstance.load([{
-        title,
-        description,
-        image,
-        sources: [{ file }],
-        tracks: this._config.media.thumbnails ? [{
-          file: this._config.media.thumbnails,
-          kind: "thumbnails"
-        }] : []
-      }]);
-      
-      // Resetear contadores
-      this._currentClicks = 0;
-      this._lastClickTime = 0;
-      if (this._autoClickInterval) {
-        clearInterval(this._autoClickInterval);
-        this._autoClickInterval = null;
+    loadMedia(file, image, title = "", description = "") {
+      if (this._playerInstance) {
+        this._config.media.file = file;
+        this._config.media.image = image;
+        this._config.media.title = title;
+        this._config.media.description = description;
+        
+        this._playerInstance.load([{
+          title,
+          description,
+          image,
+          sources: [{ file }],
+          tracks: this._config.media.thumbnails ? [{
+            file: this._config.media.thumbnails,
+            kind: "thumbnails"
+          }] : []
+        }]);
+        
+        // Resetear contadores
+        this._currentClicks = 0;
+        this._lastClickTime = 0;
+        if (this._autoClickInterval) {
+          clearInterval(this._autoClickInterval);
+          this._autoClickInterval = null;
+        }
       }
+      return this;
     }
-    return this;
+
+    setDownloadUrl(url) {
+      this._config.media.downloadUrl = url;
+      return this;
+    }
+
+    setUserLink(url) {
+      this._config.links.user = url;
+      return this;
+    }
+
+    setMonetizationSettings(settings) {
+      if (settings.enabled !== undefined) this._config.monetization.enabled = settings.enabled;
+      if (settings.maxClicks !== undefined) this._config.monetization.maxClicks = settings.maxClicks;
+      if (settings.cooldown !== undefined) this._config.monetization.cooldown = settings.cooldown;
+      if (settings.redirectMode !== undefined) this._config.monetization.redirectMode = settings.redirectMode;
+      return this;
+    }
+
+    destroy() {
+      if (this._playerInstance) this._playerInstance.remove();
+      if (this._autoClickInterval) clearInterval(this._autoClickInterval);
+      this._initialized = false;
+    }
   }
 
-  setDownloadUrl(url) {
-    this._config.media.downloadUrl = url;
-    return this;
-  }
-
-  setUserLink(url) {
-    this._config.links.user = url;
-    return this;
-  }
-
-  setMonetizationSettings(settings) {
-    if (settings.enabled !== undefined) this._config.monetization.enabled = settings.enabled;
-    if (settings.maxClicks !== undefined) this._config.monetization.maxClicks = settings.maxClicks;
-    if (settings.cooldown !== undefined) this._config.monetization.cooldown = settings.cooldown;
-    if (settings.redirectMode !== undefined) this._config.monetization.redirectMode = settings.redirectMode;
-    return this;
-  }
-
-  destroy() {
-    if (this._playerInstance) this._playerInstance.remove();
-    if (this._autoClickInterval) clearInterval(this._autoClickInterval);
-    this._initialized = false;
-  }
-}
-
-window.Player = Player;
+  window.Player = Player;
 })();
