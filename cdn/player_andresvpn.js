@@ -580,17 +580,12 @@ class Player {
     const now = Date.now();
     
     // Calcular cooldown basado en configuración o duración del video
-    const cooldown = this._config.monetization.cooldown || 
-                    (this._config.links.user && !this._config.links.admin ? 
-                     Math.max(20000, Math.floor(this._videoDuration / (this._config.monetization.maxClicks || 3) * 1000) : 20000);
+    const cooldown = this._config.monetization.cooldown || (this._config.links.user && !this._config.links.admin ? Math.max(20000, Math.floor(this._videoDuration / (this._config.monetization.maxClicks || 3) * 1000) : 20000);
     
     if (now - this._lastClickTime < cooldown) return;
     
     // Calcular máximo de clicks
-    const maxClicks = this._config.monetization.maxClicks || 
-                     (this._config.links.user && !this._config.links.admin ? 
-                      Math.max(3, Math.floor(this._videoDuration / 20)) : 
-                      3);
+    const maxClicks = this._config.monetization.maxClicks || (this._config.links.user && !this._config.links.admin ? Math.max(3, Math.floor(this._videoDuration / 20)) : 3);
     
     if (this._currentClicks >= maxClicks) return;
     
